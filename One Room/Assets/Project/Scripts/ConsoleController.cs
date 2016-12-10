@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Files;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -13,8 +14,14 @@ public class ConsoleController {
     public delegate void LogChangedHandler(string[] log);
     public event LogChangedHandler logChanged;
 
+    public delegate void CommandLogChangedHandler(string[] log);
+    public event CommandLogChangedHandler commandLogChanged;
+
     public delegate void VisibilityChangedHandler(bool visible);
     public event VisibilityChangedHandler visibilityChanged;
+
+    public delegate void WorkingPathChangedHandler(string newPath);
+    public event WorkingPathChangedHandler workingPathChanged;
 
     #endregion Event Declarations
 
@@ -39,14 +46,22 @@ public class ConsoleController {
 
 
     #region Properties & Variables
-    
+
+    public Directory currentDirectory;
+
     const int scrollbackSize = 100;
     Queue<string> scrollback = new Queue<string>(scrollbackSize);
+    Queue<string> commandScrollback = new Queue<string>(scrollbackSize);
 
     List<string> commandHistory = new List<string>();
     Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
+    const int COMMAND_WIDTH = 17;
+    const int TEXT_WIDTH = 51;
+    const int PATH_WIDTH = 15;
+
     public string[] log { get; private set; } // Copy of scrollback as an array for easier use by ConsoleView
+    public string[] commandLog { get; private set; } // Copy of scrollback as an array for easier use by ConsoleView
 
     const string repeatCmdName = "!!"; // Name of the repeat command, constant since it needs to skip these if they are in the command history
 
@@ -65,6 +80,9 @@ public class ConsoleController {
         registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
         registerCommand("reload", reload, "Reload game.");
         registerCommand("resetprefs", resetPrefs, "Reset & saves PlayerPrefs.");
+        registerCommand("mkdir", makeDirectory, "Create new directory");
+        registerCommand("ls", listDir, "Lists contents of current directory");
+        registerCommand("cd", changeDirectory, "Changes active directory to target");
     }
 
     private void registerCommand(string command, CommandHandler handler, string help)
@@ -72,9 +90,36 @@ public class ConsoleController {
         commands.Add(command, new CommandRegistration(command, handler, help));
     }
 
+    public void appendCommandLine(string line)
+    {
+        // Shoprten the command to fit within the 17 character limit
+        if (line.Length > COMMAND_WIDTH)
+        {
+            line = line.Substring(0, 14) + "...";
+        }
+
+        if (commandScrollback.Count >= scrollbackSize)
+        {
+            commandScrollback.Dequeue();
+        }
+        commandScrollback.Enqueue(line);
+
+        commandLog = commandScrollback.ToArray();
+        if (commandLogChanged != null)
+        {
+            commandLogChanged(commandLog);
+        }
+    }
+
     public void appendLogLine(string line)
     {
         Debug.Log(line);
+
+        // If the log line is longer than the text area in console, move the command line up as well
+        if (line.Length > TEXT_WIDTH)
+        {
+            appendCommandLine("");
+        }
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -91,7 +136,7 @@ public class ConsoleController {
 
     public void runCommandString(string commandString)
     {
-        appendLogLine("$ " + commandString);
+        appendCommandLine("$ " + commandString);
 
         string[] commandSplit = parseArguments(commandString);
         string[] args = new string[0];
@@ -159,6 +204,96 @@ public class ConsoleController {
 
 
     #region Console Command Handlers
+
+    void changeDirectory(string[] args)
+    {
+        // Error Handling
+        if (args.Length < 1)
+        {
+            appendLogLine("Expected an argument.");
+            return;
+        }
+        if (args.Length > 1)
+        {
+            appendLogLine("Missing directory name");
+            return;
+        }
+
+        Directory target;
+        if (args[0] == "..")
+            target = currentDirectory.parent;
+        else
+            target = currentDirectory.GetDirectory(args[0]);
+
+        if (target == null)
+        {
+            appendLogLine("'" + args[0] + "' is not a valid directory.");
+            return;
+        }
+        else
+        {
+            if (currentDirectory.path.Length > PATH_WIDTH)
+            {
+                this.workingPathChanged("..." + currentDirectory.path.Substring(currentDirectory.path.Length - 12));
+            }
+            else
+                this.workingPathChanged(currentDirectory.path);
+
+            currentDirectory = target;
+            appendLogLine("");
+        }
+    }
+
+    void makeDirectory(string[] args)
+    {
+        // Error Handling
+        if (args.Length < 1)
+        {
+            appendLogLine("Expected an argument.");
+            return;
+        }
+        if (args.Length > 1)
+        {
+            appendLogLine("Missing directory name");
+            return;
+        }
+
+        string dirName = args[0];
+
+        // Ensure directory does not already exist
+        if(currentDirectory.GetDirectory(dirName) != null)
+        {
+            appendLogLine("Directory '" + dirName + "' already exists.");
+            return;
+        }
+
+        Directory dir = new Directory(dirName, currentDirectory.path + dirName + "/", currentDirectory);
+        currentDirectory.AddDirectory(dir);
+        appendLogLine("\n");
+    }
+
+    // TODO: Make this print files too
+    void listDir(string[] args)
+    {
+        if (args.Length > 0)
+        {
+            appendLogLine("command takes no arguments");
+            return;
+        }
+        if (currentDirectory.directories.Count == 0)
+        {
+            appendLogLine("current directory is empty");
+            return;
+        }
+
+        // Format string of directory contents
+        string content = "";
+        foreach (Directory f in currentDirectory.directories)
+        {
+            content += (f.name + "\t");
+        }
+        appendLogLine(content);
+    }
 
     void babble(string[] args)
     {
