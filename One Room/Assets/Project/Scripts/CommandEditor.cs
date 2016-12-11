@@ -33,38 +33,48 @@ public class CommandEditor : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-		// Prevent typing while ctrl is held down
-        if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
+        if (activeFile != null)
         {
-            file.DeactivateInputField();
-            control = true;
-        }
-        if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
-        {
-            control = false;
-            file.ActivateInputField();
-            file.MoveTextEnd(false);
-        }
-        
-        if (control && Input.GetKeyDown(KeyCode.X))
-        {
-            ParseResults p = CommandParser.Instance.ParseFile(file.text);
-            if (p.success == true)
+            // Prevent typing while ctrl is held down
+            if (Input.GetKeyDown(KeyCode.LeftControl) || Input.GetKeyDown(KeyCode.RightControl))
             {
-                feedback.text = "";
-                activeFile.commands = p.commands;
-                activeFile.valid = true;
+                file.DeactivateInputField();
+                control = true;
             }
-            else
+            if (Input.GetKeyUp(KeyCode.LeftControl) || Input.GetKeyUp(KeyCode.RightControl))
             {
-                activeFile.valid = false;
-                feedback.text = p.error;
+                control = false;
+                file.ActivateInputField();
+                file.MoveTextEnd(false);
             }
-        }
 
-        if (control && Input.GetKeyDown(KeyCode.C))
-        {
-            Close();
+            if (control && Input.GetKeyDown(KeyCode.T))
+            {
+                activeFile.content = file.text;
+
+                ParseResults p = CommandParser.Instance.ParseFile(file.text);
+                
+                if (p.success == true)
+                {
+                    feedback.text = "Successfully Compiled!";
+                    activeFile.commands = p.commands;
+                    activeFile.valid = true;
+                }
+                else
+                {
+                    activeFile.valid = false;
+                    feedback.text = p.error;
+                }
+            }
+
+            if (control && Input.GetKeyDown(KeyCode.C))
+            {
+                ParseResults p = CommandParser.Instance.ParseFile(file.text);
+                activeFile.valid = p.success;
+                activeFile.content = file.text;
+
+                Close();
+            }
         }
     }
 
@@ -79,12 +89,17 @@ public class CommandEditor : MonoBehaviour {
         {
             // Set up file environment
             this.activeFile = openedFile;
-            this.file.text = commandsToString(openedFile.commands);
+            this.file.text = openedFile.content;
+            this.feedback.text = "";
+
+            // Disable Console
+            consoleView.EditorOpen(true);
 
             // Enable editor
             view.SetActive(true);
             file.GetComponent<ConsoleInput>().enabled = true;
-            file.ActivateInputField();            
+            file.ActivateInputField();
+            file.MoveTextEnd(true);
         }
     }
 
@@ -94,6 +109,8 @@ public class CommandEditor : MonoBehaviour {
         file.GetComponent<ConsoleInput>().enabled = false;
         file.DeactivateInputField();
         view.SetActive(false);
+
+        consoleView.EditorClose();
     }
 
 

@@ -245,12 +245,12 @@ public class ConsoleController {
         }
         else
         {
-            if (currentDirectory.path.Length > PATH_WIDTH)
+            if (target.path.Length > PATH_WIDTH)
             {
-                this.workingPathChanged("..." + currentDirectory.path.Substring(currentDirectory.path.Length - 12));
+                this.workingPathChanged("..." + target.path.Substring(target.path.Length - 12));
             }
             else
-                this.workingPathChanged(currentDirectory.path);
+                this.workingPathChanged(target.path);
 
             currentDirectory = target;
             appendLogLine("");
@@ -301,7 +301,11 @@ public class ConsoleController {
 
         // Format string of directory contents
         string content = "";
-        foreach (Directory f in currentDirectory.directories)
+        foreach (Directory d in currentDirectory.directories)
+        {
+            content += (d.name + "\t");
+        }
+        foreach (CommandFile f in currentDirectory.files)
         {
             content += (f.name + "\t");
         }
@@ -387,6 +391,7 @@ public class ConsoleController {
         }
 
         CommandFile file = currentDirectory.GetOrCreateCommandFile(args[0]);
+        appendLogLine("");
         this.openEditor(true, file);
     }
 

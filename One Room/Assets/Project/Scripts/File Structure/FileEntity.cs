@@ -21,7 +21,7 @@ namespace Files
         public List<Directory> directories;
         public List<CommandFile> files;
 
-        public Directory (string name, string path, Directory parent=null, List<Directory> dirs=null, List<FileEntity> files = null)
+        public Directory (string name, string path, Directory parent=null, List<Directory> dirs=null, List<CommandFile> files = null)
         {
             if (parent == null)
                 this.parent = this;
@@ -30,10 +30,18 @@ namespace Files
 
             this.name = name;
             this.path = path;
+
+            // SubDirs
             if (dirs != null)
                 this.directories.InsertRange(0, dirs);
             else
                 this.directories = new List<Directory>();
+
+            // Files
+            if (files != null)
+                this.files.InsertRange(0, files);
+            else
+                this.files = new List<CommandFile>();
         }
 
         public void AddDirectory(Directory newThing)
@@ -87,6 +95,7 @@ namespace Files
 
         public bool valid = false;
 
+        public string content;
         public List<string[]> commands;
 
         public CommandFile(string name, string path, List<string[]> commands)
@@ -94,6 +103,7 @@ namespace Files
             this.name = name;
             this.path = path;
             this.commands = commands;
+            this.content = "";
         }
     }
 }
