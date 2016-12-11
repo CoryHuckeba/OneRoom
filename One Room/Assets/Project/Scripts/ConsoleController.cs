@@ -86,15 +86,15 @@ public class ConsoleController {
     public ConsoleController()
     {
         //When adding commands, you must add a call below to registerCommand() with its name, implementation method, and help text.
-        registerCommand("babble", babble, "Example command that demonstrates how to parse arguments. babble [word] [# of times to repeat]");
-        registerCommand("echo", echo, "echoes arguments back as array (for testing argument parser)");
+        registerCommand("drone_set", setSlot, "takes a slot number and a command file name in the present directory.");
+        registerCommand("drone_clear", clearSlot, "takes a slot number or 'all' and clears the passed slot (or all slots)");
         registerCommand("help", help, "Print this help.");
         registerCommand("hide", hide, "Hide the console.");
         registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
         registerCommand("resetprefs", resetPrefs, "Reset & saves PlayerPrefs.");
         registerCommand("mkdir", makeDirectory, "Create new directory");
         registerCommand("ls", listDir, "Lists contents of current directory");
-        registerCommand("cd", changeDirectory, DRONE_HELP);
+        registerCommand("cd", changeDirectory, "Changes the current directory to the specified one");
         registerCommand("cmd_edit", commandEdit, COMMAND_EDIT_HELP);
     }
 
@@ -312,44 +312,56 @@ public class ConsoleController {
         appendLogLine(content);
     }
 
-    void babble(string[] args)
+    void setSlot(string[] args)
     {
         if (args.Length < 2)
         {
-            appendLogLine("Expected 2 arguments.");
+            appendLogLine("Expected two parameters: <integer - slot number> and <string - file name>");
             return;
         }
-        string text = args[0];
-        if (string.IsNullOrEmpty(text))
+
+        // Check slot number arg
+        int slotNum = 0;
+        if(!int.TryParse(args[0], out slotNum))
         {
-            appendLogLine("Expected arg1 to be text.");
+            appendLogLine("Unable to parse slot number '" + args[0] + "'. Expected integer.");
+            return;
         }
-        else
+        else if (slotNum > 7 || slotNum < 1)
         {
-            int repeat = 0;
-            if (!Int32.TryParse(args[1], out repeat))
-            {
-                appendLogLine("Expected an integer for arg2.");
-            }
-            else
-            {
-                for (int i = 0; i < repeat; ++i)
-                {
-                    appendLogLine(string.Format("{0} {1}", text, i));
-                }
-            }
+            appendLogLine("Invalid slot number '" + args[0] + "'. Expected integer from 1-7.");
+            return;
         }
+
+        // Check filename arg
+        if (!currentDirectory.ContainsFile(args[1]))
+        {
+            appendLogLine("Invalid file name '" + args[1] + "'. Please specify a file in the present directory.");
+            return;
+        }
+
+        CommandFile file = currentDirectory.GetOrCreateCommandFile(args[1]);
+        SlotManager.Instance.SetFile(slotNum, file);
     }
 
-    void echo(string[] args)
+    void clearSlot(string[] args)
     {
-        StringBuilder sb = new StringBuilder();
-        foreach (string arg in args)
+        if (args.Length != 1)
         {
-            sb.AppendFormat("{0},", arg);
+            appendLogLine("Invalid number of arguments, please pass a slot number or the string 'all'.");
+            return;
         }
-        sb.Remove(sb.Length - 1, 1);
-        appendLogLine(sb.ToString());
+        int slotNum = -1;
+        if (!int.TryParse(args[0], out slotNum) && args[0] != "all")
+        {
+            appendLogLine("Unable to parse argument '" + args[0]  + "'. Please pass a slot number or the string 'all'.");
+            return;
+        }
+        if (args[0] == "all")
+            SlotManager.Instance.clearFile();
+        else
+            SlotManager.Instance.clearFile(slotNum);
+        appendLogLine("");
     }
 
     void help(string[] args)

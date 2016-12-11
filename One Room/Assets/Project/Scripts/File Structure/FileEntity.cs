@@ -14,6 +14,8 @@ namespace Files
 
     public class Directory : FileEntity
     {
+        private const string FILE_EXT = ".drn";
+
         public string path;
         public string name;
 
@@ -73,9 +75,22 @@ namespace Files
                 }
             }
 
-            CommandFile newFile = new CommandFile(filename, this.path + filename, new List<string[]>());
+            CommandFile newFile = new CommandFile(filename + FILE_EXT, this.path + filename, new List<string[]>());
             files.Add(newFile);
             return newFile;
+        }
+
+        public bool ContainsFile(string filename)
+        {
+            foreach (CommandFile f in files)
+            {
+                if (f.name == filename)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public string PrintSelf()
