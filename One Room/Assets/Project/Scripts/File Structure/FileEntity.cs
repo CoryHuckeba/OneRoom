@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Files
 
         public Directory parent;
         public List<Directory> directories;
-        public List<FileEntity> files;
+        public List<CommandFile> files;
 
         public Directory (string name, string path, Directory parent=null, List<Directory> dirs=null, List<FileEntity> files = null)
         {
@@ -54,6 +55,21 @@ namespace Files
             return null;
         }
 
+        public CommandFile GetOrCreateCommandFile(string filename)
+        {
+            foreach (CommandFile f in files)
+            {
+                if (f.name == filename)
+                {
+                    return f;
+                }
+            }
+
+            CommandFile newFile = new CommandFile(filename, this.path + filename, new List<string[]>());
+            files.Add(newFile);
+            return newFile;
+        }
+
         public string PrintSelf()
         {
             string s = "Name: " + this.name + ", Path: " + this.path + ", Contents: ";
@@ -61,6 +77,23 @@ namespace Files
                 s = s + f.name + ", ";
 
             return s;
+        }
+    }
+
+    public class CommandFile: FileEntity
+    {
+        public string name;
+        public string path;
+
+        public bool valid = false;
+
+        public List<string[]> commands;
+
+        public CommandFile(string name, string path, List<string[]> commands)
+        {
+            this.name = name;
+            this.path = path;
+            this.commands = commands;
         }
     }
 }

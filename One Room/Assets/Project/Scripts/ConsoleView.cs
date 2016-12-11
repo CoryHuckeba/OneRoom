@@ -6,9 +6,10 @@ using Files;
 
 public class ConsoleView : MonoBehaviour
 {
-    ConsoleController console = new ConsoleController();
+    public ConsoleController console = new ConsoleController();
 
     bool didShow = false;
+    bool viewActive = true;
 
     public GameObject viewContainer; // Container for console view, should be a child of this GameObject
     public Text logTextArea;
@@ -42,7 +43,7 @@ public class ConsoleView : MonoBehaviour
     void Update()
     {
         // Toggle text input on enter key
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
+        if (viewActive && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
             if (inputField.isFocused)
             {
@@ -85,6 +86,10 @@ public class ConsoleView : MonoBehaviour
 
     void onVisibilityChanged(bool visible)
     {
+        if (visible)
+            viewActive = true;
+        else
+            viewActive = false;
         setVisibility(visible);
     }
 
@@ -101,6 +106,18 @@ public class ConsoleView : MonoBehaviour
     void onPathChanged(string newPath)
     {
         this.PathName.text = newPath;
+    }
+
+    public void EditorOpen(bool open)
+    {
+        viewActive = false;
+        viewContainer.SetActive(false);
+    }
+
+    public void EditorClose()
+    {
+        viewActive = true;
+        viewContainer.SetActive(true);
     }
 
     void updateLogStr(string[] newLog)
