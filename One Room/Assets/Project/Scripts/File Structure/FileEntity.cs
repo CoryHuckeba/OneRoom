@@ -75,7 +75,7 @@ namespace Files
                 }
             }
 
-            CommandFile newFile = new CommandFile(filename + FILE_EXT, this.path + filename, new List<string[]>());
+            CommandFile newFile = new CommandFile(filename + FILE_EXT, this.path + filename + FILE_EXT, new List<string[]>());
             files.Add(newFile);
             return newFile;
         }
@@ -113,12 +113,21 @@ namespace Files
         public string content;
         public List<string[]> commands;
 
+        public event System.Action<bool> validityChange;
+
         public CommandFile(string name, string path, List<string[]> commands)
         {
             this.name = name;
             this.path = path;
             this.commands = commands;
             this.content = "";
+        }
+
+        public void SetValid(bool valid)
+        {
+            this.valid = valid;
+            if (validityChange != null)
+                validityChange(valid);
         }
     }
 }

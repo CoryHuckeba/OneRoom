@@ -4,14 +4,16 @@ using System.Text;
 using System.Collections;
 using Files;
 
-public class ConsoleView : MonoBehaviour
+public class ConsoleView : Singleton<ConsoleView>
 {
     public ConsoleController console = new ConsoleController();
 
     bool didShow = false;
-    bool viewActive = true;
+    bool viewActive = false;
+    bool editorOpen = false;
 
     public GameObject viewContainer; // Container for console view, should be a child of this GameObject
+    public GameObject droneUI;
     public Text logTextArea;
     public Text logCommandArea;
     public Text PathName;
@@ -43,7 +45,7 @@ public class ConsoleView : MonoBehaviour
     void Update()
     {
         // Toggle text input on enter key
-        if (viewActive && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
+        if (!editorOpen && viewActive && (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)))
         {
             if (inputField.isFocused)
             {
@@ -53,10 +55,13 @@ public class ConsoleView : MonoBehaviour
                 inputField.Select();
         }
 
-        //Toggle visibility when tilde key pressed
-        if (Input.GetKeyUp("`"))
+        //Toggle visibility when escape key pressed
+        if (!editorOpen && Input.GetKeyUp(KeyCode.Escape))
         {
-            toggleVisibility();
+            if (viewActive)
+                ExitConsole();
+            else
+                OpenConsole();
         }
 
         //Toggle visibility when 5 fingers touch.
@@ -74,14 +79,31 @@ public class ConsoleView : MonoBehaviour
         }
     }
 
+    public void ExitConsole()
+    {
+        this.viewActive = false;
+        this.viewContainer.SetActive(false);
+        this.droneUI.SetActive(false);
+    }
+
+    public void OpenConsole()
+    {
+        this.viewActive = true;
+        this.viewContainer.SetActive(true);
+        this.droneUI.SetActive(true);
+        this.inputField.ActivateInputField();
+    }
+
     void toggleVisibility()
     {
         setVisibility(!viewContainer.activeSelf);
+        setVisibility(!droneUI.activeSelf);
     }
 
     void setVisibility(bool visible)
     {
         viewContainer.SetActive(visible);
+        droneUI.SetActive(visible);
     }
 
     void onVisibilityChanged(bool visible)
@@ -110,14 +132,17 @@ public class ConsoleView : MonoBehaviour
 
     public void EditorOpen(bool open)
     {
+        editorOpen = true;
         viewActive = false;
         viewContainer.SetActive(false);
     }
 
     public void EditorClose()
     {
+        editorOpen = false;
         viewActive = true;
         viewContainer.SetActive(true);
+        this.inputField.ActivateInputField();
     }
 
     void updateLogStr(string[] newLog)

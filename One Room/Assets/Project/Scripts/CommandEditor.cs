@@ -58,11 +58,11 @@ public class CommandEditor : MonoBehaviour {
                 {
                     feedback.text = "Successfully Compiled!";
                     activeFile.commands = p.commands;
-                    activeFile.valid = true;
+                    activeFile.SetValid(true);
                 }
                 else
                 {
-                    activeFile.valid = false;
+                    activeFile.SetValid(false);
                     feedback.text = p.error;
                 }
             }
@@ -70,7 +70,7 @@ public class CommandEditor : MonoBehaviour {
             if (control && Input.GetKeyDown(KeyCode.C))
             {
                 ParseResults p = CommandParser.Instance.ParseFile(file.text);
-                activeFile.valid = p.success;
+                activeFile.SetValid(p.success);
                 activeFile.content = file.text;
 
                 Close();

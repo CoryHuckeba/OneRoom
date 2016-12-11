@@ -88,6 +88,7 @@ public class ConsoleController {
         //When adding commands, you must add a call below to registerCommand() with its name, implementation method, and help text.
         registerCommand("drone_set", setSlot, "takes a slot number and a command file name in the present directory.");
         registerCommand("drone_clear", clearSlot, "takes a slot number or 'all' and clears the passed slot (or all slots)");
+        registerCommand("drone_run", startRun, "sends the drone on a run using commands in slotted files (in order)");
         registerCommand("help", help, "Print this help.");
         registerCommand("hide", hide, "Hide the console.");
         registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
@@ -126,13 +127,16 @@ public class ConsoleController {
 
     public void appendLogLine(string line)
     {
-        Debug.Log(line);
-
         // If the log line is longer than the text area in console, move the command line up as well
-        if (line.Length > TEXT_WIDTH)
+        int logLines = (int)(line.Length / TEXT_WIDTH);
+
+        if (logLines > 1)
         {
-            appendCommandLine("");
-        }
+            for (int i = 0; i < logLines - 1; i++)
+            {
+                appendCommandLine("");
+            }
+        }       
 
         if (scrollback.Count >= ConsoleController.scrollbackSize)
         {
@@ -293,7 +297,7 @@ public class ConsoleController {
             appendLogLine("command takes no arguments");
             return;
         }
-        if (currentDirectory.directories.Count == 0)
+        if (currentDirectory.directories.Count == 0 && currentDirectory.files.Count == 0)
         {
             appendLogLine("current directory is empty");
             return;
@@ -364,11 +368,35 @@ public class ConsoleController {
         appendLogLine("");
     }
 
+    void startRun(string[] args)
+    {
+        if (args.Length > 0)
+        {
+            appendLogLine("Invalid number of arguments. The 'drone_run' command takes no arguments.");
+            return;
+        }
+
+        if(!SlotManager.Instance.AllValid())
+        {
+            appendLogLine("1 or more selected drone files are not valid. Aborting run command.");
+            return;
+        }
+
+        if (DroneManager.Instance.runActive)
+        {
+            appendLogLine("Unable to establish link with drone. Please wait for the drone to return.");
+            return;
+        }
+
+        DroneManager.Instance.SetCommands(SlotManager.Instance.CompileSlots());
+    }
+
     void help(string[] args)
     {
         foreach (CommandRegistration reg in commands.Values)
         {
             appendLogLine(string.Format("{0}: {1}", reg.command, reg.help));
+            appendCommandLine("");
         }
     }
 

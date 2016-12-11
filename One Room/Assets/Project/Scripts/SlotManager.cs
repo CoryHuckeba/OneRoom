@@ -7,23 +7,23 @@ public class SlotManager : Singleton<SlotManager> {
 
     public DroneSlot[] slots;
 
-    public bool allValid = true;
-
     private Dictionary<int, DroneSlot> slotDictionary;
+    private Dictionary<int, bool> slotsValid;        
 
 	void Start () {
         // Configure array into table
         slotDictionary = new Dictionary<int, DroneSlot>();
+        slotsValid = new Dictionary<int, bool>();
         foreach (DroneSlot s in slots)
         {
             slotDictionary.Add(s.number, s);
+            slotsValid.Add(s.number, true);
         }
 	}
 	
 	public void SetFile(int slot, CommandFile file)
     {
         slotDictionary[slot].AssignSlot(file);
-        ValidateSlots();
     }
 
     public void clearFile(int slot=-1)
@@ -39,7 +39,6 @@ public class SlotManager : Singleton<SlotManager> {
         {
             slotDictionary[slot].EmptySlot();
         }
-        ValidateSlots();
     }
 
     public List<string[]> CompileSlots()
@@ -55,18 +54,20 @@ public class SlotManager : Singleton<SlotManager> {
         return commands;
     }
 
-    private void ValidateSlots()
+    public bool AllValid()
     {
-        bool v = true;
-        foreach (DroneSlot s in slots)
+        foreach (bool b in slotsValid.Values)
         {
-            if (!s.valid)
-            {
-                allValid = false;
-                return;
-            }
+            if (!b)
+                return false;
         }
 
-        allValid = true;
+        return true;
+    }
+
+    public void SetSlotValid(int slot, bool valid)
+    {
+        if (slot <= 7 && slot > 0)
+            slotsValid[slot] = valid;
     }
 }

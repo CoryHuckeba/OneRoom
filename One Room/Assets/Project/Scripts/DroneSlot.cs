@@ -23,18 +23,24 @@ public class DroneSlot : MonoBehaviour {
 
 	public void AssignSlot(CommandFile f)
     {
-        myFile = f;
+        if (myFile != null)
+            myFile.validityChange -= OnValidityChange;
 
-        this.fileName.text = f.name;
+        myFile = f;
+        myFile.validityChange += OnValidityChange;
+
+        this.fileName.text = f.path;
 
         if(myFile.valid)
         {
+            SlotManager.Instance.SetSlotValid(number, true);
             this.fileStatus.text = "valid command file";
             ApplyColor(valid_c);
             valid = true;
         }
         else
         {
+            SlotManager.Instance.SetSlotValid(number, false);
             this.fileStatus.text = "invalid command file";
             ApplyColor(invalid_c);
             valid = false;
@@ -43,6 +49,7 @@ public class DroneSlot : MonoBehaviour {
 
     public void EmptySlot()
     {
+        myFile.validityChange -= OnValidityChange;
         this.myFile = null;
 
         this.fileName.text = "No File";
@@ -60,9 +67,26 @@ public class DroneSlot : MonoBehaviour {
 
     public List<string[]> GetCommands()
     {
-        if (myFile.valid)
+        if (myFile != null && myFile.valid)
             return myFile.commands;
         else
-            return null;
+            return new List<string[]>();
+    }
+
+    private void OnValidityChange(bool valid)
+    {
+        SlotManager.Instance.SetSlotValid(number, valid);
+        if (valid)
+        {
+            this.fileStatus.text = "valid command file";
+            ApplyColor(valid_c);
+            valid = true;
+        }
+        else
+        {
+            this.fileStatus.text = "invalid command file";
+            ApplyColor(invalid_c);
+            valid = false;
+        }
     }
 }

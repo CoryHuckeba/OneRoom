@@ -11,7 +11,7 @@ public class CommandParser : Singleton<CommandParser> {
         "turn",
         "grab",
         "drop",
-        "use",
+        "open",
         "return",
         "scan"
     };
@@ -103,7 +103,7 @@ public class CommandParser : Singleton<CommandParser> {
                             results.error_line = rowNum;
                             return results;
                         }
-                    case ("use"):
+                    case ("open"):
                         if (args.Length == 2)
                         {
                             int temp;
