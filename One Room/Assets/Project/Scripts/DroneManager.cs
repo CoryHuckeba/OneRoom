@@ -52,4 +52,10 @@ public class DroneManager : Singleton<DroneManager> {
 
     #endregion Public Interface
 
+    public void endRun(List<string> log, WorldItem carriedItem)
+    {
+        runActive = false;
+        AddLog(log);
+    }
+
 }

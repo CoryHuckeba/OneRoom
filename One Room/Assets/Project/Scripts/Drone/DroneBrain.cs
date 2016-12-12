@@ -16,7 +16,8 @@ public class DroneBrain : MonoBehaviour
 
     public List<string> logList = new List<string>();
 
-    private List<string[]> commandList = new List<string[]>
+    private List<string[]> commandList = new List<string[]>();
+    /*
     {
         new string[] { "move", "3"},
         new string[] { "open" },
@@ -30,20 +31,14 @@ public class DroneBrain : MonoBehaviour
         new string[] { "move", "1" },
         new string[] { "grab" }
         //new string[] { "OpenDoor", "1435"}
-    };
+    };*/
 
     // Use this for initialization
     void Start()
     {
-        StartCoroutine("test");
+        DroneManager.Instance.beginRun += startRun;
     }
 
-    IEnumerator test()
-    {
-        yield return new WaitForSeconds(1f);
-        startRun(commandList);
-
-    }
 
     public void setItem(WorldItem carriedItem)
     {
@@ -52,14 +47,14 @@ public class DroneBrain : MonoBehaviour
 
     public void startRun(List<string[]> commandList)
     {
-        facing = "up";
+        facing = "north";
         currentRoom = WorldController.Room1;
         currentRow = 3;
         currentCol = 2;
         this.commandList = commandList;
-        this.carriedItem = new KeyCard(2, "Rick Sanchez's Level 2 Key Card", "A level 2 security key card. \n"
+        /*this.carriedItem = new KeyCard(2, "Rick Sanchez's Level 2 Key Card", "A level 2 security key card. \n"
                                         + "It bears the name and image of Dr. Rick Sanchez. \n"
-                                        + "It is partially covered with a flaky black substance.");
+                                        + "It is partially covered with a flaky black substance.");*/
         StartCoroutine("ProcessCommandList");
     }
 
@@ -98,7 +93,7 @@ public class DroneBrain : MonoBehaviour
                     break;
             }
 
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(1f);
 
         }
 
@@ -107,9 +102,9 @@ public class DroneBrain : MonoBehaviour
         //Drone manager singleton
 
         logList.ForEach(log => Debug.Log(log));
-
+        
         //TODO(Dylan): Uncomment when drone manager exists
-        //Instance.RunComplete(logList, currentItem);
+        DroneManager.Instance.endRun(logList, carriedItem);
 
     }
 
@@ -118,7 +113,7 @@ public class DroneBrain : MonoBehaviour
         int timesToMove = int.Parse(commandArgs[0]);
         for (int i = 0; i < timesToMove; i++)
         {
-            if (facing == "up")
+            if (facing == "north")
             {
                 int potentialRow = currentRow - 1;
                 WorldLocation moveLocation = currentRoom[potentialRow, currentCol];
@@ -133,22 +128,22 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved " + facing);
+                            logList.Add("Moved forward 1 meter.");
                         }
                         else
                         {
-                            logList.Add("Couldn't move " + facing + ", We ran into a closed door!");
+                            logList.Add("Couldn't move forward, We ran into a closed door!");
                         }
                     }
                     else
                     {
                         currentRow = potentialRow;
-                        logList.Add("Moved " + facing);
+                        logList.Add("Moved forward 1 meter.");
                     }
                 }
                 else
                 {
-                    logList.Add("Couldn't move " + facing + ", ran into something impassable!");
+                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
                 }
             }
             else if (facing == "south")
@@ -166,22 +161,22 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved 1 meter ");
+                            logList.Add("Moved forward 1 meter.");
                         }
                         else
                         {
-                            logList.Add("Couldn't move " + facing + ", We ran into a closed door!");
+                            logList.Add("Couldn't move forward, We ran into a closed door!");
                         }
                     }
                     else
                     {
                         currentRow = potentialRow;
-                        logList.Add("Moved 1 meter ");
+                        logList.Add("Moved forward 1 meter.");
                     }
                 }
                 else
                 {
-                    logList.Add("Couldn't move " + facing + ", ran into something impassable!");
+                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
                 }
             }
             else if (facing == "west")
@@ -199,7 +194,7 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved 1 meter ");
+                            logList.Add("Moved forward 1 meter.");
                         }
                         else
                         {
@@ -209,12 +204,12 @@ public class DroneBrain : MonoBehaviour
                     else
                     {
                         currentCol = potentialCol;
-                        logList.Add("Moved 1 meter ");
+                        logList.Add("Moved forward 1 meter.");
                     }
                 }
                 else
                 {
-                    logList.Add("Couldn't move " + facing + ", ran into something impassable!");
+                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
                 }
             }
             else if (facing == "east")
@@ -232,7 +227,7 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved " + facing);
+                            logList.Add("Moved forward 1 meter.");
                         }
                         else
                         {
@@ -242,12 +237,12 @@ public class DroneBrain : MonoBehaviour
                     else
                     {
                         currentCol = potentialCol;
-                        logList.Add("Moved " + facing);
+                        logList.Add("Moved forward 1 meter.");
                     }
                 }
                 else
                 {
-                    logList.Add("Couldn't move " + facing + ", ran into something impassable!");
+                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
                 }
             }
         }
@@ -348,10 +343,13 @@ public class DroneBrain : MonoBehaviour
                 keyCode = int.Parse(commandArgs[0]);
             }
             int keyCardLevel = 0;
-            if (carriedItem.itemType == "KeyCard")
+            if (carriedItem != null)
             {
-                KeyCard keyCard = carriedItem as KeyCard;
-                keyCardLevel = keyCard.level;
+                if (carriedItem.itemType == "KeyCard")
+                {
+                    KeyCard keyCard = carriedItem as KeyCard;
+                    keyCardLevel = keyCard.level;
+                }
             }
 
             string result = door.open(keyCode, keyCardLevel);
