@@ -121,9 +121,14 @@ public class DroneBrain : MonoBehaviour
                 WorldLocation moveLocation = currentRoom[potentialRow, currentCol];
                 if (moveLocation.isPassable)
                 {
+                    Debug.Log(moveLocation.GetType());
                     if (moveLocation.GetType() == new Door().GetType())
                     {
                         Door moveLocationDoor = moveLocation as Door;
+                        Debug.Log("MoveLocation: " + potentialRow + ", " + currentCol);
+                        Debug.Log("NextRoom: " + moveLocationDoor.nextRoomName);
+                        Debug.Log("Door's nextroom coords: " + moveLocationDoor.nextRoomRow + ", " + moveLocationDoor.nextRoomCol);
+                        Debug.Log("Door's nextroom: \n" + WorldController.printRoomArray(moveLocationDoor.nextRoom));
                         if (moveLocationDoor.isOpen)
                         {
                             currentRoom = moveLocationDoor.nextRoom;
@@ -131,7 +136,7 @@ public class DroneBrain : MonoBehaviour
                             currentCol = moveLocationDoor.nextRoomCol;
 
                             // END THE FUCKING GAME
-                            if (currentRoom.Length == 1 && currentRoom.GetLength(0) == 1)
+                            if (currentRoom.Length == 11)
                                 SceneManager.LoadScene(1);
 
                             logList.Add("Moved forward 1 meter.");
@@ -448,9 +453,14 @@ public class DroneBrain : MonoBehaviour
 
     void scan()
     {
+
+
         Debug.Log(currentRoom == null);
         Debug.Log(currentRoom.GetLength(0));
         Debug.Log(currentRoom.GetLength(1));
+
+        Debug.Log(WorldController.printRoomArray(currentRoom));
+        
         logList.Add("Initiate room scan");
         for (int row = 0; row < currentRoom.GetLength(0); row++)
         {
@@ -483,7 +493,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the North");
+                            logList.Add("The scan detects " + locInRoom.description + " to the North");
                         }
                     }
                     else if (row > currentRow && col == currentCol)
@@ -504,7 +514,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the South");
+                            logList.Add("The scan detects " + locInRoom.description + " to the South");
                         }
                     }
                     else if (row == currentRow && col < currentCol)
@@ -525,7 +535,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the West");
+                            logList.Add("The scan detects " + locInRoom.description + " to the West");
                         }
                     }
                     else if (row == currentRow && col > currentCol)
@@ -546,7 +556,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the East");
+                            logList.Add("The scan detects " + locInRoom.description + " to the East");
                         }
                     }
                     else if (row < currentRow && col < currentCol)
@@ -567,7 +577,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the North-West");
+                            logList.Add("The scan detects " + locInRoom.description + " to the North-West");
                         }
                     }
                     else if (row < currentRow && col > currentCol)
@@ -588,7 +598,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the North-East");
+                            logList.Add("The scan detects " + locInRoom.description + " to the North-East");
                         }
                     }
                     else if (row > currentRow && col < currentCol)
@@ -609,7 +619,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the South-West");
+                            logList.Add("The scan detects " + locInRoom.description + " to the South-West");
                         }
                     }
                     else if (row > currentRow && col > currentCol)
@@ -630,7 +640,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
-                            logList.Add("The scan detects" + locInRoom.description + " to the South-East");
+                            logList.Add("The scan detects " + locInRoom.description + " to the South-East");
                         }
                     }
 

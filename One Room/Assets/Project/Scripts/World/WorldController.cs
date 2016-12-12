@@ -12,6 +12,7 @@ public abstract class WorldLocation
 
 public class Door : WorldLocation
 {
+    public string nextRoomName = "";
     public bool isOpen = false;
     public int keyCode;
     public string keyCardColor;
@@ -132,7 +133,7 @@ public class WorldController : MonoBehaviour
     public int[,] Room2Map = new int[,] {
         {1, 1, 1, 2, 1, 1},
         {1, 0, 0, 0, 0, 1},
-        {1, 3, 0, 0, 0, 2},
+        {1, 3, 0, 0, 0, 1},
         {1, 3, 3, 0, 0, 1},
         {1, 3, 3, 3, 0, 1},
         {1, 3, 0, 0, 0, 1},
@@ -163,7 +164,7 @@ public class WorldController : MonoBehaviour
         {1, 0, 0, 0, 0, 0, 1},
         {1, 5, 5, 5, 5, 5, 1},
         {1, 0, 0, 0, 4, 0, 1},
-        {1, 0, 0, 0, 0, 0, 1},
+        {2, 0, 0, 0, 0, 0, 1},
         {1, 0, 0, 0, 0, 0, 1},
         {1, 1, 1, 1, 1, 1, 1}
     };
@@ -176,7 +177,17 @@ public class WorldController : MonoBehaviour
     };
 
     public int[,] Room7Map = new int[,] {
-        {0}
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
     };
 
     public WorldLocation[,] Room1;
@@ -263,6 +274,8 @@ public class WorldController : MonoBehaviour
                 WorldLocation testWall = new Wall();
                 WorldLocation testFloor = new Floor();
                 WorldLocation testObstacle = new Obstacle("derp");
+                WorldLocation testBoulder = new Boulder();
+                WorldLocation testButthole = new Hole();
 
                 if (thingInRoomMap.GetType() == testFloor.GetType())
                 {
@@ -279,6 +292,14 @@ public class WorldController : MonoBehaviour
                 else if (thingInRoomMap.GetType() == testObstacle.GetType())
                 {
                     roomString += "3, ";
+                }
+                else if (thingInRoomMap.GetType() == testBoulder.GetType())
+                {
+                    roomString += "4, ";
+                }
+                else if (thingInRoomMap.GetType() == testButthole.GetType())
+                {
+                    roomString += "5, ";
                 }
             }
             roomString += "\n";
@@ -316,6 +337,7 @@ public class WorldController : MonoBehaviour
         if (Room2[7, 1] is Door)
         {
             Door door = Room2[7, 1] as Door;
+            door.nextRoomName = "Room 1";
             door.nextRoom = Room1;
             door.nextRoomRow = 1;
             door.nextRoomCol = 2;
@@ -325,6 +347,7 @@ public class WorldController : MonoBehaviour
         if (Room2[0, 3] is Door)
         {
             Door door = Room2[0, 3] as Door;
+            door.nextRoomName = "Room 3";
             door.nextRoom = Room3;
             door.nextRoomRow = 3;
             door.nextRoomCol = 1;
@@ -336,6 +359,7 @@ public class WorldController : MonoBehaviour
         if (Room3[4, 1] is Door)
         {
             Door door = Room3[4, 1] as Door;
+            door.nextRoomName = "Room 2";
             door.nextRoom = Room2;
             door.nextRoomRow = 1;
             door.nextRoomCol = 3;
@@ -345,6 +369,7 @@ public class WorldController : MonoBehaviour
         if (Room3[0, 3] is Door)
         {
             Door door = Room3[0, 3] as Door;
+            door.nextRoomName = "Room 4";
             door.nextRoom = Room4;
             door.nextRoomRow = 3;
             door.nextRoomCol = 2;
@@ -354,6 +379,7 @@ public class WorldController : MonoBehaviour
         if (Room3[2, 6] is Door)
         {
             Door door = Room3[2, 6] as Door;
+            door.nextRoomName = "Room 5";
             door.nextRoom = Room5;
             door.nextRoomRow = 6;
             door.nextRoomCol = 1;
@@ -366,6 +392,7 @@ public class WorldController : MonoBehaviour
         if (Room4[4, 2] is Door)
         {
             Door door = Room4[4, 2] as Door;
+            door.nextRoomName = "Room 3";
             door.nextRoom = Room3;
             door.nextRoomRow = 1;
             door.nextRoomCol = 3;
@@ -379,6 +406,7 @@ public class WorldController : MonoBehaviour
         if (Room5[0, 3] is Door)
         {
             Door door = Room5[0, 3] as Door;
+            door.nextRoomName = "Room 7";
             door.nextRoom = Room7;
             door.nextRoomRow = 0;
             door.nextRoomCol = 0;
@@ -389,6 +417,7 @@ public class WorldController : MonoBehaviour
         if (Room5[6, 0] is Door)
         {
             Door door = Room5[6, 0] as Door;
+            door.nextRoomName = "Room 3";
             door.nextRoom = Room3;
             door.nextRoomRow = 2;
             door.nextRoomCol = 5;
@@ -398,6 +427,7 @@ public class WorldController : MonoBehaviour
         if (Room5[2, 6] is Door)
         {
             Door door = Room5[2, 6] as Door;
+            door.nextRoomName = "Room 6";
             door.nextRoom = Room6;
             door.nextRoomRow = 2;
             door.nextRoomCol = 1;

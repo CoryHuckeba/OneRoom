@@ -43,7 +43,7 @@ public class DroneManager : Singleton<DroneManager> {
         string newLog = "";
         foreach (string line in log)
         {
-            newLog += line + "\n";
+            newLog += "- " + line + "\n";
         }
 
         if (newLog == "")
