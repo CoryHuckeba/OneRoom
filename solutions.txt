@@ -1,0 +1,214 @@
+// Welcome to Command Edit!
+//   - Double slashes indicate a comment. The compiler ignores everything in a line following them
+//   - The following are commands you may give the drone on a run:
+//
+//      - move [int] - Moves the drone the specified number of meters in the direction it's facing
+//      - turn ['left' 'right' or 'around'] - Turns the drone to face the specified direction
+//      - grab - Picks up any grabbable object within a meter of the drone
+//      - drop - Drops any item held my the drone
+//      - open [int] - Opens a door the drone is facing. Pass an optional 4 digit number to use a keycode
+//      - scan - Scans the room for useful objects and information. More accurate when closer to stuff.
+//      - push - Pushes an object the drone is facing by 1 meter in the same direction
+
+// Room 1
+move 1
+turn right
+move 1
+grab
+turn around
+move 1
+turn right
+move 1
+open
+move 1
+
+// Room 2
+turn right
+move 3
+turn left
+move 5
+turn left
+move 1
+turn right
+open
+move 1
+
+// Room 3
+move 2
+turn right
+move 1
+push
+move 1
+turn left
+open
+move 3
+turn left
+drop
+move 1
+grab
+turn left
+move 2
+turn left
+move 1
+turn right
+open
+move 1
+turn left
+push
+move 1
+turn right
+move 1
+turn left
+move 1
+open
+move 3
+scan
+
+
+
+
+
+
+move 2
+open
+move 1
+turn right
+move 3
+turn left
+move 5
+turn left
+move 1
+turn right
+open
+move 3
+scan
+turn right
+move 4
+
+
+
+
+// Welcome to Command Edit!
+//   - Double slashes indicate a comment. The compiler ignores everything in a line following them
+//   - The following are commands you may give the drone on a run:
+//
+//      - move [int] - Moves the drone the specified number of meters in the direction it's facing
+//      - turn ['left' 'right' or 'around'] - Turns the drone to face the specified direction
+//      - grab - Picks up any grabbable object within a meter of the drone
+//      - drop - Drops any item held my the drone
+//      - open [int] - Opens a door the drone is facing. Pass an optional 4 digit number to use a keycode
+//      - scan - Scans the room for useful objects and information. More accurate when closer to stuff.
+//      - push - Pushes an object the drone is facing by 1 meter in the same direction
+
+// Room 1
+move 1
+turn right
+move 1
+grab
+turn around
+move 1
+turn right
+move 1
+open
+move 1
+
+// Room 2
+turn right
+move 3
+turn left
+move 5
+turn left
+move 1
+turn right
+open
+move 1
+
+// Room 3
+move 2
+turn right
+move 1
+push
+move 1
+turn left
+open
+move 3
+turn left
+drop
+move 1
+grab
+turn left
+move 2
+turn left
+move 1
+turn right
+open
+move 1
+turn left
+push
+move 1
+turn right
+move 1
+turn left
+move 1
+open
+
+// Room 5
+move 4
+turn left
+push
+turn left
+move 3
+open
+move 2
+turn right
+move 1
+turn left
+move 1
+turn right
+open
+move 2
+drop
+move 1
+grab
+turn around
+move 2
+open
+move 1
+turn left
+move 1
+turn right
+move 1
+turn left
+move 1
+open
+move 4
+turn left
+move 4
+turn right
+move 1
+open
+move 1
+drop
+move 1
+grab
+turn around
+move 1
+open
+move 3
+turn right
+move 1
+open
+move 1
+
+
+
+
+
+
+
+
+
+
+
+
+
