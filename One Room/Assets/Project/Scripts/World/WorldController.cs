@@ -4,10 +4,10 @@ using UnityEngine;
 
 public abstract class WorldLocation
 {
-    public bool isPassable = true;
-    public bool isInteractable = false;
+    public bool isPassable;
+    public bool isPushable;
     public WorldItem itemAtLocation;
-    public string description = "";
+    public string description;
 }
 
 public class Door : WorldLocation
@@ -19,8 +19,8 @@ public class Door : WorldLocation
     public int nextRoomRow;
     public int nextRoomCol;
 
-    //NOTE(Dylan): this likely will need to return a string - or maybe we can pass in a reference to a log object
-    //for the door to write it's log entry into. 
+    // NOTE(Dylan): this likely will need to return a string - or maybe we can pass in a reference to a log object
+    // for the door to write it's log entry into. 
     public string open(int keyCode, int keyCard)
     {
         if (keyCard >= this.keyCardLevel)
@@ -28,26 +28,20 @@ public class Door : WorldLocation
             if (keyCode == this.keyCode)
             {
                 this.isOpen = true;
-                this.isPassable = true;
-                //TODO(Dylan): create a log for opening the door. 
+                this.isPassable = true; 
                 return "Entry Authorized, opening door.";
             }
             else
             {
                 if (keyCode == 0)
                 {
-                    //the drone didn't provide a key code.
-
-                    //TODO(Dylan): create a log for a door open failure. 
                     return "Failed to open door: 'Error, entry not authorized. Please input a valid key code.'";
                 }
-                //TODO(Dylan): create a log for a door open failure. 
                 return "Failed to open door: 'Error, entry not authorized. Key code incorrect.'";
             }
         }
         else
         {
-            //TODO(Dylan): create a log for a door open failure
             return "Failed to open door: 'Error, entry not authorized. Level 2 Key card required.'";
         }
     }
@@ -67,7 +61,7 @@ public class Door : WorldLocation
         this.keyCode = 0;
         this.keyCardLevel = 0;
         this.isOpen = false;
-        this.isPassable = true;//this.isOpen ? true : false;
+        this.isPassable = true;// NOTE(Dylan): doors are always considered passable, even if closed, unless they are collapsed or otherwise blocked. 
     }
 }
 
@@ -76,16 +70,40 @@ public class Wall : WorldLocation
     public Wall()
     {
         this.isPassable = false;
-        this.isInteractable = false;
+        this.isPushable = false;
     }
 }
 
 public class Obstacle : WorldLocation
 {
-    public Obstacle()
+    public Obstacle(string description)
     {
         this.isPassable = false;
-        this.isInteractable = false;
+        this.isPushable = false;
+        this.description = description;
+    }
+}
+
+public class Boulder : WorldLocation
+{
+    public Boulder()
+    {
+        this.isPassable = false;
+        this.isPushable = true;
+        this.description = "a Boulder. The drone should be able to push this.";
+    }
+}
+
+public class Hole : WorldLocation
+{
+    public bool isFilled;
+
+    public Hole()
+    {
+        this.isPassable = true;
+        this.isFilled = false;
+        this.isPushable = false;
+        this.description = "a deep fissure in the floor. The drone may be able to cross if it can be filled in.";
     }
 }
 
@@ -94,7 +112,7 @@ public class Floor : WorldLocation
     public Floor()
     {
         this.isPassable = true;
-        this.isInteractable = false;
+        this.isPushable = false;
     }
 }
 
@@ -182,7 +200,34 @@ public class WorldController : MonoBehaviour
                 }
                 else if (thingInRoomMap == 3)
                 {
-                    objectHere = new Obstacle();
+                    string obsDesc = "";
+                    switch (Random.Range(0, 3))
+                    {
+                        case (0):
+                            obsDesc = "a collapsed wall";
+                            break;
+                        case (1):
+                            obsDesc = "a pile of rubble";
+                            break;
+                        case (2):
+                            obsDesc = "a toppled piece of heavy machinery";
+                            break;
+                        case (3):
+                            obsDesc = "a collapsed section of concrete ceiling";
+                            break;
+                        default:
+                            break;
+                    }
+
+                    objectHere = new Obstacle(obsDesc);
+                }
+                else if (thingInRoomMap == 4)
+                {
+                    objectHere = new Boulder();
+                }
+                else if (thingInRoomMap == 5)
+                {
+                    objectHere = new Hole();
                 }
 
                 RoomArray[i, j] = objectHere;
@@ -194,7 +239,6 @@ public class WorldController : MonoBehaviour
 
     public string printRoomArray(WorldLocation[,] Room)
     {
-        //WorldLocation[,] RoomArray = new WorldLocation[RoomMap.GetLength(0), RoomMap.GetLength(1)];
         string roomString = "";
 
         for (int i = 0; i < Room.GetLength(0); i++)
@@ -206,7 +250,7 @@ public class WorldController : MonoBehaviour
                 WorldLocation testDoor = new Door();
                 WorldLocation testWall = new Wall();
                 WorldLocation testFloor = new Floor();
-                WorldLocation testObstacle = new Obstacle();
+                WorldLocation testObstacle = new Obstacle("derp");
 
                 if (thingInRoomMap.GetType() == testFloor.GetType())
                 {

@@ -6,6 +6,9 @@ public abstract class WorldItem
 {
     public string itemType;
     public string sprite;
+    public string size;
+    public string material;
+    public string name;
     public string description;
     public bool carryable;
     //bool draggable;
@@ -17,10 +20,13 @@ public class KeyCard : WorldItem
 {
     public int level;
 
-    public KeyCard(int level, string description)
+    public KeyCard(int level, string name, string description)
     {
         this.level = level;
         itemType = "KeyCard";
+        size = "small";
+        material = "plastic";
+        this.name = name;
         this.description = description;
         carryable = true;
     }

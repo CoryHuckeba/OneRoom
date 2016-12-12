@@ -57,7 +57,9 @@ public class DroneBrain : MonoBehaviour
         currentRow = 3;
         currentCol = 2;
         this.commandList = commandList;
-        this.carriedItem = new KeyCard(2, "A level 2 security key card.");
+        this.carriedItem = new KeyCard(2, "Rick Sanchez's Level 2 Key Card", "A level 2 security key card. \n"
+                                        + "It bears the name and image of Dr. Rick Sanchez. \n"
+                                        + "It is partially covered with a flaky black substance.");
         StartCoroutine("ProcessCommandList");
     }
 
@@ -76,19 +78,19 @@ public class DroneBrain : MonoBehaviour
             switch (commandName)
             {
                 case "move":
-                    yield return StartCoroutine("move", commandArgs);
+                    move(commandArgs);
                     break;
                 case "turn":
-                    yield return StartCoroutine("turn", commandArgs);
+                    turn(commandArgs);
                     break;
                 case "open":
-                    yield return StartCoroutine("open", commandArgs);
+                    open(commandArgs);
                     break;
                 case "grab":
-                    yield return StartCoroutine("grab");
+                    grab();
                     break;
                 case "drop":
-                    yield return StartCoroutine("drop");
+                    drop();
                     break;
                 case "use":
                     break;
@@ -96,26 +98,22 @@ public class DroneBrain : MonoBehaviour
                     break;
             }
 
-            if (i == (commandList.Count - 1))
-            {
-                //NOTE(Dylan): We're done with the run. 
-                //So send the information to the 
-                //Drone manager singleton
-
-                logList.ForEach(log => Debug.Log(log));
-
-                //TODO(Dylan): Uncomment when drone manager exists
-                //Instance.RunComplete(logList, currentItem);
-
-            }
-
             yield return new WaitForSeconds(0.1f);
 
         }
 
+        //NOTE(Dylan): We're done with the run. 
+        //So send the information to the 
+        //Drone manager singleton
+
+        logList.ForEach(log => Debug.Log(log));
+
+        //TODO(Dylan): Uncomment when drone manager exists
+        //Instance.RunComplete(logList, currentItem);
+
     }
 
-    IEnumerator move(string[] commandArgs)
+    void move(string[] commandArgs)
     {
         int timesToMove = int.Parse(commandArgs[0]);
         for (int i = 0; i < timesToMove; i++)
@@ -153,7 +151,7 @@ public class DroneBrain : MonoBehaviour
                     logList.Add("Couldn't move " + facing + ", ran into something impassable!");
                 }
             }
-            else if (facing == "down")
+            else if (facing == "south")
             {
                 int potentialRow = currentRow + 1;
                 WorldLocation moveLocation = currentRoom[potentialRow, currentCol];
@@ -168,7 +166,7 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved " + facing);
+                            logList.Add("Moved 1 meter ");
                         }
                         else
                         {
@@ -178,7 +176,7 @@ public class DroneBrain : MonoBehaviour
                     else
                     {
                         currentRow = potentialRow;
-                        logList.Add("Moved " + facing);
+                        logList.Add("Moved 1 meter ");
                     }
                 }
                 else
@@ -186,7 +184,7 @@ public class DroneBrain : MonoBehaviour
                     logList.Add("Couldn't move " + facing + ", ran into something impassable!");
                 }
             }
-            else if (facing == "left")
+            else if (facing == "west")
             {
                 int potentialCol = currentCol - 1;
                 WorldLocation moveLocation = currentRoom[currentRow, potentialCol];
@@ -201,7 +199,7 @@ public class DroneBrain : MonoBehaviour
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
 
-                            logList.Add("Moved " + facing);
+                            logList.Add("Moved 1 meter ");
                         }
                         else
                         {
@@ -211,7 +209,7 @@ public class DroneBrain : MonoBehaviour
                     else
                     {
                         currentCol = potentialCol;
-                        logList.Add("Moved " + facing);
+                        logList.Add("Moved 1 meter ");
                     }
                 }
                 else
@@ -219,7 +217,7 @@ public class DroneBrain : MonoBehaviour
                     logList.Add("Couldn't move " + facing + ", ran into something impassable!");
                 }
             }
-            else if (facing == "right")
+            else if (facing == "east")
             {
                 int potentialCol = currentCol + 1;
                 WorldLocation moveLocation = currentRoom[currentRow, potentialCol];
@@ -238,7 +236,7 @@ public class DroneBrain : MonoBehaviour
                         }
                         else
                         {
-                            logList.Add("Couldn't move " + facing + ", We ran into a closed door!");
+                            logList.Add("Couldn't move , We ran into a closed door!");
                         }
                     }
                     else
@@ -252,13 +250,12 @@ public class DroneBrain : MonoBehaviour
                     logList.Add("Couldn't move " + facing + ", ran into something impassable!");
                 }
             }
-            yield return new WaitForSeconds(0.1f);
         }
     }
 
-    IEnumerator turn(string[] commandArgs)
+    void turn(string[] commandArgs)
     {
-        string turnDir = "right";
+        string turnDir = "left";
         int timesToTurn = 1;
 
         if (commandArgs.Length >= 1)
@@ -274,70 +271,69 @@ public class DroneBrain : MonoBehaviour
         for (int i = 0; i < timesToTurn; i++)
         {
 
-            if (facing == "up")
+            if (facing == "north")
             {
                 if (turnDir == "left")
                 {
-                    facing = "left";
+                    facing = "west";
                 }
                 else if (turnDir == "right")
                 {
-                    facing = "right";
+                    facing = "east";
                 }
             }
-            else if (facing == "down")
+            else if (facing == "south")
             {
                 if (turnDir == "left")
                 {
-                    facing = "right";
+                    facing = "east";
                 }
                 else if (turnDir == "right")
                 {
-                    facing = "left";
+                    facing = "west";
                 }
             }
-            else if (facing == "left")
+            else if (facing == "west")
             {
                 if (turnDir == "left")
                 {
-                    facing = "down";
+                    facing = "south";
                 }
                 else if (turnDir == "right")
                 {
-                    facing = "up";
+                    facing = "north";
                 }
             }
-            else if (facing == "right")
+            else if (facing == "east")
             {
                 if (turnDir == "left")
                 {
-                    facing = "up";
+                    facing = "north";
                 }
                 else if (turnDir == "right")
                 {
-                    facing = "down";
+                    facing = "south";
                 }
             }
             logList.Add("Turned " + turnDir);
-            yield return new WaitForSeconds(0.1f);
         }
     }
 
-    IEnumerator open(string[] commandArgs)
+    void open(string[] commandArgs)
     {
         WorldLocation doorLocation = currentRoom[currentRow, currentCol];
         switch (facing)
         {
-            case "up":
+            case "north":
                 doorLocation = currentRoom[currentRow - 1, currentCol];
                 break;
-            case "down":
+            case "south":
                 doorLocation = currentRoom[currentRow + 1, currentCol];
                 break;
-            case "left":
+            case "west":
                 doorLocation = currentRoom[currentRow, currentCol - 1];
                 break;
-            case "right":
+            case "east":
                 doorLocation = currentRoom[currentRow, currentCol + 1];
                 break;
             default:
@@ -365,10 +361,9 @@ public class DroneBrain : MonoBehaviour
         {
             logList.Add("Open failed. There is no door here.");
         }
-        yield return new WaitForSeconds(0.1f);
     }
 
-    IEnumerator grab()
+    void grab()
     {
         WorldLocation currentLocation = currentRoom[currentRow, currentCol];
         WorldItem itemToGrab = currentLocation.itemAtLocation;
@@ -380,7 +375,7 @@ public class DroneBrain : MonoBehaviour
                 {
                     carriedItem = itemToGrab;
                     currentLocation.itemAtLocation = null;
-                    logList.Add("Grab succeeded: the drone picked up " + carriedItem.description);
+                    logList.Add("Grab succeeded: the drone picked up " + carriedItem.name);
                 }
                 else
                 {
@@ -396,10 +391,9 @@ public class DroneBrain : MonoBehaviour
         {
             logList.Add("Grab failed: there is nothing here to pick up!");
         }
-        yield return new WaitForSeconds(0.1f);
     }
 
-    IEnumerator drop()
+    void drop()
     {
         WorldLocation currentLocation = currentRoom[currentRow, currentCol];
         WorldItem itemAtCurrentLocation = currentLocation.itemAtLocation;
@@ -409,7 +403,7 @@ public class DroneBrain : MonoBehaviour
             {
                 currentLocation.itemAtLocation = carriedItem;
                 carriedItem = null;
-                logList.Add("Drop succeeded: the drone dropped " + currentLocation.itemAtLocation.description);
+                logList.Add("Drop succeeded: the drone dropped " + currentLocation.itemAtLocation.name);
             }
             else
             {
@@ -420,9 +414,129 @@ public class DroneBrain : MonoBehaviour
         {
             logList.Add("Drop failed: the drone has nothing to drop!");
         }
-        yield return new WaitForSeconds(0.1f);
     }
 
+    void scan()
+    {
+        for (int row = 0; row < currentRoom.GetLength(0); row++)
+        {
+            for (int col = 0; col < currentRoom.GetLength(1); col++)
+            {
+                WorldLocation locInRoom = currentRoom[row, col];
+                if (locInRoom.itemAtLocation != null)
+                {
+                    if (row == currentRow && col == currentCol)
+                    {
+                        //the item is east on top of us
+                        //use more detailed description
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.name + " in the immediate vicinity of the drone.");
+                    }
+                    else if (row < currentRow || col == currentCol)
+                    {
+                        //the item is directly north
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North");
+                    }
+                    else if (row > currentRow || col == currentCol)
+                    {
+                        //the item is directly south
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South");
+                    }
+                    else if (row == currentRow || col < currentCol)
+                    {
+                        //the item is directly west
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the West");
+                    }
+                    else if (row == currentRow || col > currentCol)
+                    {
+                        //the item is directly east
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the East");
+                    }
+                    else if (row < currentRow || col < currentCol)
+                    {
+                        //the item is to the north west
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-West");
+                    }
+                    else if (row < currentRow || col > currentCol)
+                    {
+                        //the item is to the north east
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-East");
+                    }
+                    else if (row > currentRow || col < currentCol)
+                    {
+                        //the item is to the south west
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-West");
+                    }
+                    else if (row > currentRow || col > currentCol)
+                    {
+                        //the item is to the south east
+                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-East");
+                    }
+
+                }
+            }
+        }
+    }
+
+    void push()
+    {
+        WorldLocation locToPush = null;
+        WorldLocation pushDest = null;
+        switch (facing)
+        {
+            case ("north"):
+                locToPush = currentRoom[currentRow - 1, currentCol];
+                if(currentRow - 2 >= 0)
+                {
+                    pushDest = currentRoom[currentRow - 2, currentCol];
+                }
+                break;
+            case ("south"):
+                locToPush = currentRoom[currentRow + 1, currentCol];
+                if(currentRow + 2 <= currentRoom.GetLength(0))
+                {
+                    pushDest = currentRoom[currentRow + 2, currentCol];
+                }
+                break;
+            case ("east"):
+                locToPush = currentRoom[currentRow, currentCol + 1];
+                if(currentCol + 2 <= currentRoom.GetLength(1))
+                {
+                    pushDest = currentRoom[currentRow, currentCol + 2];
+                }
+                break;
+            case ("west"):
+                locToPush = currentRoom[currentRow, currentCol - 1];
+                if(currentCol - 2 >= 0)
+                {
+                    pushDest = currentRoom[currentRow, currentCol - 2];
+                }
+                break;
+        }
+
+        if(locToPush.isPushable == true)
+        {
+            if (pushDest.GetType() == new Floor().GetType())
+            {
+                locToPush = new Floor();
+                pushDest = new Boulder();
+                logList.Add("Push success: The drone pushes the boulder ~1 meter to the " + facing);
+                
+            }
+            else
+            {
+                logList.Add("Push failure: The boulder doesn't budge, something is blocking it on the other side");
+            }
+        }
+        else
+        {
+            logList.Add("Push failure: The drone pushes against the " + locToPush.description + " but it does not move.");
+        }
+    }
+
+    void toss()
+    {
+
+    }
 
     // Update is called once per frame
     void Update()
