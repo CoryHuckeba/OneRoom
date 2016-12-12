@@ -25,7 +25,7 @@ public class ConsoleView : Singleton<ConsoleView>
         {
             // Set up console initial path
             console.currentDirectory = new Directory("Home", "Home/");
-            PathName.text = "Home/";
+            PathName.text = "Home/";           
 
             // Subscribe to console events
             console.visibilityChanged += onVisibilityChanged;
@@ -33,6 +33,7 @@ public class ConsoleView : Singleton<ConsoleView>
             console.commandLogChanged += onCommandLogChanged;
             console.workingPathChanged += onPathChanged;
         }
+
         updateLogStr(console.log);
     }
 
@@ -142,10 +143,13 @@ public class ConsoleView : Singleton<ConsoleView>
     {
         if (newLog == null)
         {
-            logTextArea.text = "";
+            // Show instructions
+            logTextArea.text = "Welcome! type help for a list of commands";
         }
         else
         {
+            if (logTextArea.text == "Welcome! type help for a list of commands")
+                logTextArea.text = "";
             logTextArea.text = string.Join("\n", newLog);
         }
     }

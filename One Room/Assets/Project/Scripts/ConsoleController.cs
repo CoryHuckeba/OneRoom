@@ -153,6 +153,7 @@ public class ConsoleController {
         if (commandSplit.Length < 1)
         {
             appendLogLine(string.Format("Unable to process command '{0}'", commandString));
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
 
         }
@@ -172,6 +173,7 @@ public class ConsoleController {
         if (!commands.TryGetValue(command, out reg))
         {
             appendLogLine(string.Format("Unknown command '{0}', type 'help' for list.", command));
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
         }
         else
         {
@@ -221,11 +223,13 @@ public class ConsoleController {
         if (args.Length < 1)
         {
             appendLogLine("Expected an argument.");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
         if (args.Length > 1)
         {
             appendLogLine("Missing directory name");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
 
@@ -238,6 +242,7 @@ public class ConsoleController {
         if (target == null)
         {
             appendLogLine("'" + args[0] + "' is not a valid directory.");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
         else
@@ -260,11 +265,13 @@ public class ConsoleController {
         if (args.Length < 1)
         {
             appendLogLine("Expected an argument.");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
         if (args.Length > 1)
         {
             appendLogLine("Missing directory name");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
 
@@ -274,6 +281,7 @@ public class ConsoleController {
         if(currentDirectory.GetDirectory(dirName) != null)
         {
             appendLogLine("Directory '" + dirName + "' already exists.");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
 
@@ -288,6 +296,7 @@ public class ConsoleController {
         if (args.Length > 0)
         {
             appendLogLine("command takes no arguments");
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             return;
         }
         if (currentDirectory.directories.Count == 0 && currentDirectory.files.Count == 0)
@@ -313,6 +322,7 @@ public class ConsoleController {
     {
         if (args.Length < 2)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Expected two parameters: <integer - slot number> and <string - file name>");
             return;
         }
@@ -321,11 +331,13 @@ public class ConsoleController {
         int slotNum = 0;
         if(!int.TryParse(args[0], out slotNum))
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Unable to parse slot number '" + args[0] + "'. Expected integer.");
             return;
         }
         else if (slotNum > 7 || slotNum < 1)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Invalid slot number '" + args[0] + "'. Expected integer from 1-7.");
             return;
         }
@@ -333,6 +345,7 @@ public class ConsoleController {
         // Check filename arg
         if (!currentDirectory.ContainsFile(args[1]))
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Invalid file name '" + args[1] + "'. Please specify a file in the present directory.");
             return;
         }
@@ -346,12 +359,14 @@ public class ConsoleController {
     {
         if (args.Length != 1)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Invalid number of arguments, please pass a slot number or the string 'all'.");
             return;
         }
         int slotNum = -1;
         if (!int.TryParse(args[0], out slotNum) && args[0] != "all")
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Unable to parse argument '" + args[0]  + "'. Please pass a slot number or the string 'all'.");
             return;
         }
@@ -366,18 +381,21 @@ public class ConsoleController {
     {
         if (args.Length > 0)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Invalid number of arguments. The 'drone_run' command takes no arguments.");
             return;
         }
 
         if(!SlotManager.Instance.AllValid())
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("1 or more selected drone files are not valid. Aborting run command.");
             return;
         }
 
         if (DroneManager.Instance.runActive)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Unable to establish link with drone. Please wait for the drone to return.");
             return;
         }
@@ -426,6 +444,7 @@ public class ConsoleController {
     {
         if (args.Length != 1)
         {
+            AudioManager.Instance.playSound(SoundType.InvalidCommand);
             appendLogLine("Expected a filename to open or create");
             return;
         }
