@@ -15,7 +15,7 @@ public class Computer : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive && !ConsoleView.Instance.editorOpen)
+        if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive && !ConsoleView.Instance.editorOpen && !PauseMenu.Instance.showing)
         {
             PlayerController.Instance.AllowMove(false);
             ConsoleView.Instance.OpenConsole();

@@ -635,8 +635,7 @@ public class DroneBrain : MonoBehaviour
                             if (door.keyCardColor != "none")
                             {
                                 logList.Add("The scan detects a " + door.keyCardColor + " door to the South-East");
-                            }
-
+                            }                        
                         }
                         else if (locInRoom is Boulder || locInRoom is Hole)
                         {
@@ -725,7 +724,10 @@ public class DroneBrain : MonoBehaviour
         }
         else
         {
-            logList.Add("Push failure: The drone pushes against the " + locToPush.description + " but it does not move.");
+            if (!string.IsNullOrEmpty(locToPush.description))
+                logList.Add("Push failure: The drone pushes against the " + locToPush.description + " but it does not move.");
+            else
+                logList.Add("Push failure: There is nothing for the drone to push here.");
         }
     }
 

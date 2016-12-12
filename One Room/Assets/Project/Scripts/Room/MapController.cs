@@ -16,7 +16,7 @@ public class MapController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive)
+        if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive && !PauseMenu.Instance.showing)
         {
             mapView.SetActive(true);
             PlayerController.Instance.AllowMove(false);

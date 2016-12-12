@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : Singleton<PlayerController> {
 
     public Rigidbody2D rb;
+    public Text pauseInstruction;
 
     public bool canMove = true;
     public float moveSpeed = 300f;
@@ -25,24 +27,30 @@ public class PlayerController : Singleton<PlayerController> {
             verticalSpeed = 0f;
             horizontalSpeed = 0f;
             // Move Up
-            if (Input.GetKey(KeyCode.W))
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow))
             {
                 verticalSpeed += moveSpeed;
             }
             // Move Down
-            if (Input.GetKey(KeyCode.S))
+            if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow))
             {
                 verticalSpeed -= moveSpeed;
             }
             // Move Left
-            if (Input.GetKey(KeyCode.A))
+            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow))
             {
                 horizontalSpeed -= moveSpeed;
             }
             // Move right
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow))
             {
                 horizontalSpeed += moveSpeed;
+            }
+
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                AllowMove(false);
+                PauseMenu.Instance.Open();
             }
 
             rb.velocity = new Vector2(horizontalSpeed, verticalSpeed);
@@ -51,6 +59,7 @@ public class PlayerController : Singleton<PlayerController> {
 
     public void AllowMove(bool can)
     {
+        pauseInstruction.gameObject.SetActive(can);
         this.canMove = can;
         if (!can)
             rb.velocity = Vector2.zero;
