@@ -46,6 +46,7 @@ public class AudioManager : Singleton<AudioManager> {
     }
 }
 
+[System.Serializable]
 public class SoundProfile
 {
     public SoundType type;

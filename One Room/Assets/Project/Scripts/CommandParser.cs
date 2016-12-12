@@ -110,7 +110,11 @@ public class CommandParser : Singleton<CommandParser> {
                                 return results;
                             }
                         case ("open"):
-                            if (args.Length == 2)
+                            if (args.Length == 1)
+                            {
+                                break;
+                            }
+                            else if (args.Length == 2)
                             {
                                 int temp;
                                 if (args[1].Length == 4 && int.TryParse(args[1], out temp))
@@ -143,6 +147,15 @@ public class CommandParser : Singleton<CommandParser> {
                             else
                             {
                                 results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
+                                results.error_line = rowNum;
+                                return results;
+                            }
+                        case ("push"):
+                            if (args.Length == 1)
+                                break;
+                            else
+                            {
+                                results.error = "Incorrect number of arguments for command 'push' in line " + rowNum + ". Expected 0.";
                                 results.error_line = rowNum;
                                 return results;
                             }
