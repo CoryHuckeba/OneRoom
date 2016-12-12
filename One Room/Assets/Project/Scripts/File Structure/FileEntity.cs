@@ -111,9 +111,9 @@ namespace Files
             "//\n" +
             "//      - move [int] - Moves the drone the specified number of meters in the direction it's facing\n" +
             "//      - turn ['left' 'right' or 'around'] - Turns the drone to face the specified direction\n" +
-            "//      - grab - Picks up any grabbable object within a meter of the drone\n" +
-            "//      - drop - Drops any item held my the drone\n" +
-            "//      - open [int] - Opens a door the drone is facing. Pass an optional 4 digit number to use a keycode\n" +
+            "//      - grab - Picks up any grabbable object in the same square meter as the drone\n" +
+            "//      - drop - Drops any item held by the drone\n" +
+            "//      - open - Opens a door the drone is facing. Some doors require the drone to hold a keycard.\n" +
             "//      - scan - Scans the room for useful objects and information. More accurate when closer to stuff.\n" +
             "//      - push - Pushes an object the drone is facing by 1 meter in the same direction\n";
              

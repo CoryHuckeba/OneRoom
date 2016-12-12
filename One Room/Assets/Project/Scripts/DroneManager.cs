@@ -47,7 +47,7 @@ public class DroneManager : Singleton<DroneManager> {
         }
 
         if (newLog == "")
-            newLog = "Empty Log. Did you forget to inpuit commands before running?\n";
+            newLog = "Empty Log. Did you forget to input commands before running?\n";
 
         newLog += "\n---End of Log---";
         logs.Insert(logs.Count, newLog);

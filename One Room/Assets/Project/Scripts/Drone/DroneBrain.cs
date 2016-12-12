@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DroneBrain : MonoBehaviour
 {
@@ -96,7 +97,7 @@ public class DroneBrain : MonoBehaviour
                     break;
             }
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(.1f);
 
         }
 
@@ -128,6 +129,10 @@ public class DroneBrain : MonoBehaviour
                             currentRoom = moveLocationDoor.nextRoom;
                             currentRow = moveLocationDoor.nextRoomRow;
                             currentCol = moveLocationDoor.nextRoomCol;
+
+                            // END THE FUCKING GAME
+                            if (currentRoom.Length == 1 && currentRoom.GetLength(0) == 1)
+                                SceneManager.LoadScene(1);
 
                             logList.Add("Moved forward 1 meter.");
                         }
@@ -443,6 +448,7 @@ public class DroneBrain : MonoBehaviour
 
     void scan()
     {
+        Debug.Log(currentRoom == null);
         Debug.Log(currentRoom.GetLength(0));
         Debug.Log(currentRoom.GetLength(1));
         logList.Add("Initiate room scan");
@@ -638,34 +644,46 @@ public class DroneBrain : MonoBehaviour
     {
         WorldLocation locToPush = null;
         WorldLocation pushDest = null;
+
+        Vector2 pushCoords = Vector2.zero;
+        Vector2 pushEndCoords = Vector2.zero;
+
         switch (facing)
         {
             case ("north"):
                 locToPush = currentRoom[currentRow - 1, currentCol];
+                pushCoords = new Vector2(currentRow - 1, currentCol);
                 if(currentRow - 2 >= 0)
                 {
                     pushDest = currentRoom[currentRow - 2, currentCol];
+                    pushEndCoords = new Vector2(currentRow - 2, currentCol);
                 }
                 break;
             case ("south"):
                 locToPush = currentRoom[currentRow + 1, currentCol];
-                if(currentRow + 2 <= currentRoom.GetLength(0))
+                pushCoords = new Vector2(currentRow + 1, currentCol);
+                if (currentRow + 2 <= currentRoom.GetLength(0))
                 {
                     pushDest = currentRoom[currentRow + 2, currentCol];
+                    pushEndCoords = new Vector2(currentRow + 2, currentCol);
                 }
                 break;
             case ("east"):
                 locToPush = currentRoom[currentRow, currentCol + 1];
-                if(currentCol + 2 <= currentRoom.GetLength(1))
+                pushCoords = new Vector2(currentRow, currentCol + 1);
+                if (currentCol + 2 <= currentRoom.GetLength(1))
                 {
                     pushDest = currentRoom[currentRow, currentCol + 2];
+                    pushEndCoords = new Vector2(currentRow, currentCol + 2);
                 }
                 break;
             case ("west"):
                 locToPush = currentRoom[currentRow, currentCol - 1];
-                if(currentCol - 2 >= 0)
+                pushCoords = new Vector2(currentRow, currentCol - 1);
+                if (currentCol - 2 >= 0)
                 {
                     pushDest = currentRoom[currentRow, currentCol - 2];
+                    pushEndCoords = new Vector2(currentRow, currentCol - 2);
                 }
                 break;
         }
@@ -674,15 +692,19 @@ public class DroneBrain : MonoBehaviour
         {
             if (pushDest.GetType() == new Floor().GetType())
             {
-                locToPush = new Floor();
-                pushDest = new Boulder();
+                currentRoom[(int)pushCoords.x, (int)pushCoords.y] = new Floor();
+                currentRoom[(int)pushEndCoords.x, (int)pushEndCoords.y] = new Boulder();
+                //locToPush = new Floor();
+                //pushDest = new Boulder();
                 logList.Add("Push success: The drone pushes the boulder forward one meter");
                 
             }
             else if(pushDest.GetType() == new Hole().GetType())
             {
-                locToPush = new Floor();
-                pushDest = new Floor();
+                currentRoom[(int)pushCoords.x, (int)pushCoords.y] = new Floor();
+                currentRoom[(int)pushEndCoords.x, (int)pushEndCoords.y] = new Floor();
+                //locToPush = new Floor();
+                //pushDest = new Floor();
                 logList.Add("Push success: The drone pushes the boulder forward one meter.");
                 logList.Add("The boulder falls into a hole, filling it.");
             }
