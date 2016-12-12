@@ -55,15 +55,6 @@ public class ConsoleView : Singleton<ConsoleView>
                 inputField.Select();
         }
 
-        //Toggle visibility when escape key pressed
-        if (!editorOpen && Input.GetKeyUp(KeyCode.Escape))
-        {
-            if (viewActive)
-                ExitConsole();
-            else
-                OpenConsole();
-        }
-
         //Toggle visibility when 5 fingers touch.
         if (Input.touches.Length == 5)
         {
@@ -81,9 +72,11 @@ public class ConsoleView : Singleton<ConsoleView>
 
     public void ExitConsole()
     {
+        PlayerController.Instance.AllowMove(true);
         this.viewActive = false;
         this.viewContainer.SetActive(false);
         this.droneUI.SetActive(false);
+        AudioManager.Instance.playSound(SoundType.ComputerOff);
     }
 
     public void OpenConsole()

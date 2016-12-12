@@ -17,7 +17,9 @@ public class Computer : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive && !ConsoleView.Instance.editorOpen)
         {
+            PlayerController.Instance.AllowMove(false);
             ConsoleView.Instance.OpenConsole();
+            AudioManager.Instance.playSound(SoundType.ComputerOn);
         }
 	}
 

@@ -48,4 +48,11 @@ public class PlayerController : Singleton<PlayerController> {
             rb.velocity = new Vector2(horizontalSpeed, verticalSpeed);
         }
     }
+
+    public void AllowMove(bool can)
+    {
+        this.canMove = can;
+        if (!can)
+            rb.velocity = Vector2.zero;
+    }
 }

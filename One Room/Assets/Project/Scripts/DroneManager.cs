@@ -5,6 +5,7 @@ using UnityEngine;
 public class DroneManager : Singleton<DroneManager> {
 
     public event System.Action<List<string[]>> beginRun;
+    public event System.Action newLogs;
 
     public List<string> logs = new List<string>();
 
@@ -33,6 +34,8 @@ public class DroneManager : Singleton<DroneManager> {
                 beginRun(commands);
             } 
         }
+
+        AudioManager.Instance.playSound(SoundType.DroneLeaving);
     }
 
     public void AddLog(List<string> log)
@@ -48,6 +51,9 @@ public class DroneManager : Singleton<DroneManager> {
 
         newLog += "\n---End of Log---";
         logs.Insert(logs.Count, newLog);
+
+        if (newLogs != null)
+            newLogs();
     }
 
     #endregion Public Interface
@@ -56,6 +62,8 @@ public class DroneManager : Singleton<DroneManager> {
     {
         runActive = false;
         AddLog(log);
+
+        AudioManager.Instance.playSound(SoundType.DroneReturn);
     }
 
 }

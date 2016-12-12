@@ -337,6 +337,7 @@ public class ConsoleController {
             return;
         }
 
+        appendLogLine("");
         CommandFile file = currentDirectory.GetOrCreateCommandFile(args[1]);
         SlotManager.Instance.SetFile(slotNum, file);
     }
@@ -381,6 +382,7 @@ public class ConsoleController {
             return;
         }
 
+        appendLogLine("drone embarking.");
         DroneManager.Instance.SetCommands(SlotManager.Instance.CompileSlots());
     }
 
@@ -402,10 +404,8 @@ public class ConsoleController {
 
     void hide(string[] args)
     {
-        if (visibilityChanged != null)
-        {
-            visibilityChanged(false);
-        }
+        appendLogLine("");
+        ConsoleView.Instance.ExitConsole();
     }
 
     void repeatCommand(string[] args)
@@ -433,12 +433,6 @@ public class ConsoleController {
         CommandFile file = currentDirectory.GetOrCreateCommandFile(args[0]);
         appendLogLine("");
         this.openEditor(true, file);
-    }
-
-    void resetPrefs(string[] args)
-    {
-        PlayerPrefs.DeleteAll();
-        PlayerPrefs.Save();
     }
 
     #endregion Console Command Handlers
