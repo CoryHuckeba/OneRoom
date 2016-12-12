@@ -14,21 +14,20 @@ public class Door : WorldLocation
 {
     public bool isOpen = false;
     public int keyCode;
-    public int keyCardLevel;
+    public string keyCardColor;
     public WorldLocation[,] nextRoom;
     public int nextRoomRow;
     public int nextRoomCol;
 
     // NOTE(Dylan): this likely will need to return a string - or maybe we can pass in a reference to a log object
     // for the door to write it's log entry into. 
-    public string open(int keyCode, int keyCard)
+    public string open(int keyCode, string keyCardColor)
     {
-        if (keyCard >= this.keyCardLevel)
+        if (keyCardColor == this.keyCardColor || this.keyCardColor == "none")
         {
-            if (keyCode == this.keyCode)
+            if (keyCode == this.keyCode || this.keyCode == 0)
             {
                 this.isOpen = true;
-                this.isPassable = true; 
                 return "Entry Authorized, opening door.";
             }
             else
@@ -42,15 +41,15 @@ public class Door : WorldLocation
         }
         else
         {
-            return "Failed to open door: 'Error, entry not authorized. Level 2 Key card required.'";
+            return "Failed to open door: 'Error, entry not authorized." + this.keyCardColor + "required.";
         }
     }
 
-    public Door(WorldLocation[,] nextRoom, int keyCode = 0, int keyCardLevel = 0, bool isOpen = false)
+    public Door(WorldLocation[,] nextRoom, int keyCode = 0, string keyCardColor = "none", bool isOpen = false)
     {
         this.nextRoom = nextRoom;
         this.keyCode = keyCode;
-        this.keyCardLevel = keyCardLevel;
+        this.keyCardColor = keyCardColor;
         this.isOpen = isOpen;
         this.isPassable = this.isOpen ? true : false;
     }
@@ -59,7 +58,7 @@ public class Door : WorldLocation
     {
         this.nextRoom = null;
         this.keyCode = 0;
-        this.keyCardLevel = 0;
+        this.keyCardColor = "none";
         this.isOpen = false;
         this.isPassable = true;// NOTE(Dylan): doors are always considered passable, even if closed, unless they are collapsed or otherwise blocked. 
     }
@@ -90,7 +89,7 @@ public class Boulder : WorldLocation
     {
         this.isPassable = false;
         this.isPushable = true;
-        this.description = "a Boulder. The drone should be able to push this.";
+        this.description = "a Boulder (The drone should be able to push this).";
     }
 }
 
@@ -103,7 +102,7 @@ public class Hole : WorldLocation
         this.isPassable = true;
         this.isFilled = false;
         this.isPushable = false;
-        this.description = "a deep fissure in the floor. The drone may be able to cross if it can be filled in.";
+        this.description = "a deep fissure in the floor (The drone may be able to cross if it can be filled in).";
     }
 }
 
@@ -122,8 +121,8 @@ public class WorldController : MonoBehaviour
 
     public int[,] Room1Map = new int[,] {
         {1, 1, 2, 1, 1},
-        {1, 0, 0, 0, 1},
-        {1, 0, 0, 0, 1},
+        {1, 5, 0, 4, 1},
+        {1, 4, 0, 0, 1},
         {1, 0, 0, 0, 1},
         {1, 1, 2, 1, 1}
     };
@@ -349,8 +348,8 @@ public class WorldController : MonoBehaviour
             Door door = Room5[2, 4] as Door;
             door.nextRoom = Room6;
             door.keyCode = 1234;
-            door.keyCardLevel = 4;
-            door.open(1234, 3);
+            door.keyCardColor = "blue";
+            door.open(1234, "blue");
             Room5[4, 2] = door;
         }
 
@@ -359,6 +358,15 @@ public class WorldController : MonoBehaviour
             Door door = Room6[0, 2] as Door;
             door.nextRoom = Room5;
             Room6[0, 2] = door;
+        }
+
+        if(Room2[1, 1] is Floor)
+        {
+            Room2[1, 1].itemAtLocation = new Gore();
+        }
+        if (Room2[3, 3] is Floor)
+        {
+            Room2[3, 3].itemAtLocation = new Gore();
         }
 
         /*

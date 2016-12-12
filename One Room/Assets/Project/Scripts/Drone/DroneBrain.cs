@@ -17,8 +17,7 @@ public class DroneBrain : MonoBehaviour
     public List<string> logList = new List<string>();
 
     private List<string[]> commandList = new List<string[]>();
-    /*
-    {
+    /*{
         new string[] { "move", "3"},
         new string[] { "open" },
         new string[] { "move", "2"},
@@ -87,7 +86,11 @@ public class DroneBrain : MonoBehaviour
                 case "drop":
                     drop();
                     break;
-                case "use":
+                case "scan":
+                    scan();
+                    break;
+                case "push":
+                    push();
                     break;
                 default:
                     break;
@@ -100,11 +103,9 @@ public class DroneBrain : MonoBehaviour
         //NOTE(Dylan): We're done with the run. 
         //So send the information to the 
         //Drone manager singleton
-
         logList.ForEach(log => Debug.Log(log));
-        
-        //TODO(Dylan): Uncomment when drone manager exists
         DroneManager.Instance.endRun(logList, carriedItem);
+        logList.Clear();
 
     }
 
@@ -132,7 +133,13 @@ public class DroneBrain : MonoBehaviour
                         }
                         else
                         {
-                            logList.Add("Couldn't move forward, We ran into a closed door!");
+                            if(moveLocationDoor.keyCardColor != "none")
+                            {
+                                logList.Add("Failed to move forward. A closed " + moveLocationDoor.keyCardColor + " door is blocking the way.");
+                            } else
+                            {
+                                logList.Add("Failed to move forward. A closed door is blocking the way.");
+                            }
                         }
                     }
                     else
@@ -143,7 +150,7 @@ public class DroneBrain : MonoBehaviour
                 }
                 else
                 {
-                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
+                    logList.Add("Failed to move forward. " + moveLocation.description + " is blocking the way.");
                 }
             }
             else if (facing == "south")
@@ -165,7 +172,14 @@ public class DroneBrain : MonoBehaviour
                         }
                         else
                         {
-                            logList.Add("Couldn't move forward, We ran into a closed door!");
+                            if (moveLocationDoor.keyCardColor != "none")
+                            {
+                                logList.Add("Failed to move forward. A closed " + moveLocationDoor.keyCardColor + " door is blocking the way.");
+                            }
+                            else
+                            {
+                                logList.Add("Failed to move forward. A closed door is blocking the way.");
+                            }
                         }
                     }
                     else
@@ -176,7 +190,7 @@ public class DroneBrain : MonoBehaviour
                 }
                 else
                 {
-                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
+                    logList.Add("Failed to move forward. " + moveLocation.description + " is blocking the way");
                 }
             }
             else if (facing == "west")
@@ -198,7 +212,14 @@ public class DroneBrain : MonoBehaviour
                         }
                         else
                         {
-                            logList.Add("Couldn't move " + facing + ", We ran into a closed door!");
+                            if (moveLocationDoor.keyCardColor != "none")
+                            {
+                                logList.Add("Failed to move forward. A closed " + moveLocationDoor.keyCardColor + " door is blocking the way.");
+                            }
+                            else
+                            {
+                                logList.Add("Failed to move forward. A closed door is blocking the way.");
+                            }
                         }
                     }
                     else
@@ -209,7 +230,7 @@ public class DroneBrain : MonoBehaviour
                 }
                 else
                 {
-                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
+                    logList.Add("Failed to move forward. " + moveLocation.description + " is blocking the way");
                 }
             }
             else if (facing == "east")
@@ -231,7 +252,13 @@ public class DroneBrain : MonoBehaviour
                         }
                         else
                         {
-                            logList.Add("Couldn't move , We ran into a closed door!");
+                            if(moveLocationDoor.keyCardColor != "none")
+                            {
+                                logList.Add("Failed to move forward. A closed " + moveLocationDoor.keyCardColor + " door is blocking the way.");
+                            } else
+                            {
+                                logList.Add("Failed to move forward. A closed door is blocking the way.");
+                            }
                         }
                     }
                     else
@@ -242,7 +269,7 @@ public class DroneBrain : MonoBehaviour
                 }
                 else
                 {
-                    logList.Add("Couldn't move forward, the drone ran into something impassable!");
+                    logList.Add("Failed to move forward. " + moveLocation.description + " is blocking the way");
                 }
             }
         }
@@ -342,17 +369,17 @@ public class DroneBrain : MonoBehaviour
             {
                 keyCode = int.Parse(commandArgs[0]);
             }
-            int keyCardLevel = 0;
+            string keyCardColor = "none";
             if (carriedItem != null)
             {
                 if (carriedItem.itemType == "KeyCard")
                 {
                     KeyCard keyCard = carriedItem as KeyCard;
-                    keyCardLevel = keyCard.level;
+                    keyCardColor = keyCard.color;
                 }
             }
 
-            string result = door.open(keyCode, keyCardLevel);
+            string result = door.open(keyCode, keyCardColor);
             logList.Add(result);
         }
         else
@@ -416,12 +443,15 @@ public class DroneBrain : MonoBehaviour
 
     void scan()
     {
+        Debug.Log(currentRoom.GetLength(0));
+        Debug.Log(currentRoom.GetLength(1));
+        logList.Add("Initiate room scan");
         for (int row = 0; row < currentRoom.GetLength(0); row++)
         {
             for (int col = 0; col < currentRoom.GetLength(1); col++)
             {
                 WorldLocation locInRoom = currentRoom[row, col];
-                if (locInRoom.itemAtLocation != null)
+                if (locInRoom.itemAtLocation != null || locInRoom is Door || locInRoom is Boulder || locInRoom is Hole)
                 {
                     if (row == currentRow && col == currentCol)
                     {
@@ -429,50 +459,179 @@ public class DroneBrain : MonoBehaviour
                         //use more detailed description
                         logList.Add("The scan detects a " + locInRoom.itemAtLocation.name + " in the immediate vicinity of the drone.");
                     }
-                    else if (row < currentRow || col == currentCol)
+                    else if (row < currentRow && col == currentCol)
                     {
                         //the item is directly north
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North");
+                        if(locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if(door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the North");
+                            }
+                            
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the North");
+                        }
                     }
-                    else if (row > currentRow || col == currentCol)
+                    else if (row > currentRow && col == currentCol)
                     {
                         //the item is directly south
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the South");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the South");
+                        }
                     }
-                    else if (row == currentRow || col < currentCol)
+                    else if (row == currentRow && col < currentCol)
                     {
                         //the item is directly west
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the West");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the West");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the West");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the West");
+                        }
                     }
-                    else if (row == currentRow || col > currentCol)
+                    else if (row == currentRow && col > currentCol)
                     {
                         //the item is directly east
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the East");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the East");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the East");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the East");
+                        }
                     }
-                    else if (row < currentRow || col < currentCol)
+                    else if (row < currentRow && col < currentCol)
                     {
                         //the item is to the north west
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-West");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-West");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the North-West");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the North-West");
+                        }
                     }
-                    else if (row < currentRow || col > currentCol)
+                    else if (row < currentRow && col > currentCol)
                     {
                         //the item is to the north east
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-East");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the North-East");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the North-East");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the North-East");
+                        }
                     }
-                    else if (row > currentRow || col < currentCol)
+                    else if (row > currentRow && col < currentCol)
                     {
                         //the item is to the south west
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-West");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-West");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the South-West");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the South-West");
+                        }
                     }
-                    else if (row > currentRow || col > currentCol)
+                    else if (row > currentRow && col > currentCol)
                     {
                         //the item is to the south east
-                        logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-East");
+                        if (locInRoom.itemAtLocation != null)
+                        {
+                            logList.Add("The scan detects a " + locInRoom.itemAtLocation.size + " " + locInRoom.itemAtLocation.material + " object to the South-East");
+                        }
+                        if (locInRoom is Door)
+                        {
+                            Door door = locInRoom as Door;
+                            if (door.keyCardColor != "none")
+                            {
+                                logList.Add("The scan detects a " + door.keyCardColor + " door to the South-East");
+                            }
+
+                        }
+                        else if (locInRoom is Boulder || locInRoom is Hole)
+                        {
+                            logList.Add("The scan detects" + locInRoom.description + " to the South-East");
+                        }
                     }
 
                 }
             }
         }
+        logList.Add("Room scan complete");
     }
 
     void push()
@@ -517,8 +676,15 @@ public class DroneBrain : MonoBehaviour
             {
                 locToPush = new Floor();
                 pushDest = new Boulder();
-                logList.Add("Push success: The drone pushes the boulder ~1 meter to the " + facing);
+                logList.Add("Push success: The drone pushes the boulder forward one meter");
                 
+            }
+            else if(pushDest.GetType() == new Hole().GetType())
+            {
+                locToPush = new Floor();
+                pushDest = new Floor();
+                logList.Add("Push success: The drone pushes the boulder forward one meter.");
+                logList.Add("The boulder falls into a hole, filling it.");
             }
             else
             {

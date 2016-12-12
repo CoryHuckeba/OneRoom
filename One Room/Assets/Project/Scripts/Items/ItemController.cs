@@ -18,17 +18,50 @@ public abstract class WorldItem
 
 public class KeyCard : WorldItem
 {
-    public int level;
+    public string color;
 
-    public KeyCard(int level, string name, string description)
+    public KeyCard(string color, string name, string description)
     {
-        this.level = level;
+        this.color = color;
         itemType = "KeyCard";
         size = "small";
         material = "plastic";
         this.name = name;
         this.description = description;
         carryable = true;
+    }
+}
+
+public class Gore : WorldItem
+{
+    public Gore()
+    {
+        string name = "";
+        string description = "";
+        switch (Random.Range(0, 3))
+        {
+            case (0):
+                name = "human head";
+                description = "human head";
+                break;
+            case (1):
+                name = "human arm";
+                description = "human arm";
+                break;
+            case (2):
+                name = "human leg";
+                description = "human leg";
+                break;
+            case (3):
+                name = "unidentified soft tissue";
+                description = "unidentified soft tissue";
+                break;
+        }
+        this.name = name;
+        this.description = description; 
+        this.material = "organic";
+        this.size = "medium";
+        this.carryable = true;
     }
 }
 
