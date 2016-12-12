@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 8475ff6c4c68e7a4ea1f439426615c4e
+timeCreated: 1481574895
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Souvenir
+  fontNames:
+  - Souvenir
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
