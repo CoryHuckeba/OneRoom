@@ -18,7 +18,16 @@ public class MapController : MonoBehaviour {
     {
         if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive)
         {
-            ConsoleView.Instance.OpenConsole();
+            mapView.SetActive(true);
+            PlayerController.Instance.AllowMove(false);
+        }
+
+
+        //Toggle visibility when escape key pressed
+        if (Input.GetKeyUp(KeyCode.Escape) && mapView.activeInHierarchy)
+        {
+            mapView.SetActive(false);
+            PlayerController.Instance.AllowMove(true);
         }
     }
 

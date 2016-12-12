@@ -69,7 +69,7 @@ namespace Files
         {
             foreach (CommandFile f in files)
             {
-                if (f.name == filename)
+                if (f.name == filename || f.name == filename + FILE_EXT)
                 {
                     return f;
                 }

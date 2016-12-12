@@ -11,10 +11,29 @@ public class LogViewer : MonoBehaviour {
     public Button previousButton;
     public Text logField;
 
+    void Start()
+    {
+        DroneManager.Instance.newLogs += OnNewLogs;
+    }
+
     void OnEnable()
     {
         index = DroneManager.Instance.logs.Count - 1;
-        logField.text = DroneManager.Instance.logs[index];
+
+        if (DroneManager.Instance.logs.Count > 0)
+            logField.text = DroneManager.Instance.logs[index];
+        else
+            logField.text = "No Logs Found";
+
+        if (index <= 0)
+        {
+            Debug.Log("Index: " + index);
+            previousButton.interactable = false;
+        }
+        else
+            previousButton.interactable = true;
+
+        nextButton.interactable = false;
     }
 
     public void NextLog()
@@ -26,6 +45,9 @@ public class LogViewer : MonoBehaviour {
 
             if (index == DroneManager.Instance.logs.Count - 1)
                 nextButton.interactable = false;
+
+            if (DroneManager.Instance.logs.Count > 1)
+                previousButton.interactable = true;
         }
     }
 
@@ -38,6 +60,19 @@ public class LogViewer : MonoBehaviour {
 
             if (index == 0)
                 previousButton.interactable = false;
+
+            nextButton.interactable = true;
         }
+    }
+
+    public void OnNewLogs()
+    {
+        if (DroneManager.Instance.logs.Count == 1)
+        {
+            index = 0;
+            logField.text = DroneManager.Instance.logs[0];
+        }
+        else
+            nextButton.interactable = true;
     }
 }
