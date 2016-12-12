@@ -6,6 +6,8 @@ public class DroneManager : Singleton<DroneManager> {
 
     public event System.Action<List<string[]>> beginRun;
 
+    public List<string> logs = new List<string>();
+
     public bool runActive = false;
     
 	// Use this for initialization
@@ -31,17 +33,21 @@ public class DroneManager : Singleton<DroneManager> {
                 beginRun(commands);
             } 
         }
+    }
 
-        foreach (string[] args in commands)
+    public void AddLog(List<string> log)
+    {
+        string newLog = "";
+        foreach (string line in log)
         {
-            string debug = "";
-            foreach (string s in args)
-            {
-                debug += s + " ";
-            }
-
-            Debug.Log(debug);
+            newLog += line + "\n";
         }
+
+        if (newLog == "")
+            newLog = "Empty Log. Did you forget to inpuit commands before running?\n";
+
+        newLog += "\n---End of Log---";
+        logs.Insert(logs.Count, newLog);
     }
 
     #endregion Public Interface

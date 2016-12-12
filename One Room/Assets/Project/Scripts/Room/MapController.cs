@@ -2,29 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Computer : MonoBehaviour {
+public class MapController : MonoBehaviour {
 
     private bool playerClose = false;
+    public GameObject mapView;
+    public GameObject interactiveKey;
 
-    // Use this for initialization
-    void Start () {
+	// Use this for initialization
+	void Start () {
 		
 	}
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E) && playerClose)
+        if (Input.GetKeyDown(KeyCode.E) && playerClose && !ConsoleView.Instance.viewActive)
         {
             ConsoleView.Instance.OpenConsole();
-            Debug.Log("Computer time!");
         }
-	}
+    }
 
     void OnTriggerEnter2D(Collider2D col)
     {
         if (col.gameObject.tag == "Player")
         {
+            interactiveKey.SetActive(true);
             playerClose = true;
         }
     }
@@ -33,8 +35,8 @@ public class Computer : MonoBehaviour {
     {
         if (col.gameObject.tag == "Player")
         {
+            interactiveKey.SetActive(false);
             playerClose = false;
         }
     }
-
 }

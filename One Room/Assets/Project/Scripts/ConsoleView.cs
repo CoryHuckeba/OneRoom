@@ -9,8 +9,8 @@ public class ConsoleView : Singleton<ConsoleView>
     public ConsoleController console = new ConsoleController();
 
     bool didShow = false;
-    bool viewActive = false;
-    bool editorOpen = false;
+    public bool viewActive = false;
+    public bool editorOpen = false;
 
     public GameObject viewContainer; // Container for console view, should be a child of this GameObject
     public GameObject droneUI;

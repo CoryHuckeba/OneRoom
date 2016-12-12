@@ -65,13 +65,6 @@ public class ConsoleController {
     const int PATH_WIDTH = 15;
 
     // Help Formatting
-    const string DRONE_HELP = "Commands for configuring and running drone operations\n" +
-        "\tset <slot number> <file name>: Sets the provided file to the specified drone config slot\n" + 
-        "\tclear <slot number> OR 'all': Removes the file from the provided slot number\n" +
-        "\trun: Runs all provided files in order of slot number";
-
-    const string COMMAND_EDIT_HELP = "Commands for creation and editing drone batch files\n" +
-        "\t";
 
     public string[] log { get; private set; } // Copy of scrollback as an array for easier use by ConsoleView
     public string[] commandLog { get; private set; } // Copy of scrollback as an array for easier use by ConsoleView
@@ -86,17 +79,17 @@ public class ConsoleController {
     public ConsoleController()
     {
         //When adding commands, you must add a call below to registerCommand() with its name, implementation method, and help text.
-        registerCommand("drone_set", setSlot, "takes a slot number and a command file name in the present directory.");
-        registerCommand("drone_clear", clearSlot, "takes a slot number or 'all' and clears the passed slot (or all slots)");
-        registerCommand("drone_run", startRun, "sends the drone on a run using commands in slotted files (in order)");
+        
         registerCommand("help", help, "Print this help.");
-        registerCommand("hide", hide, "Hide the console.");
-        registerCommand(repeatCmdName, repeatCommand, "Repeat last command.");
-        registerCommand("resetprefs", resetPrefs, "Reset & saves PlayerPrefs.");
         registerCommand("mkdir", makeDirectory, "Create new directory");
         registerCommand("ls", listDir, "Lists contents of current directory");
         registerCommand("cd", changeDirectory, "Changes the current directory to the specified one");
-        registerCommand("cmd_edit", commandEdit, COMMAND_EDIT_HELP);
+        registerCommand("cmd_edit", commandEdit, "Opens the passed filename in Command Edit or creates a new file.");
+        registerCommand("drone_set", setSlot, "takes a slot number and a command file name in the present directory.");
+        registerCommand("drone_clear", clearSlot, "takes a slot number or 'all' and clears the passed slot (or all slots)");
+        registerCommand("drone_run", startRun, "sends the drone on a run using commands in slotted files (in order)");
+
+        registerCommand("exit", hide, "Exit the console.");
     }
 
     private void registerCommand(string command, CommandHandler handler, string help)
@@ -393,8 +386,15 @@ public class ConsoleController {
 
     void help(string[] args)
     {
+        int i = 0;
         foreach (CommandRegistration reg in commands.Values)
         {
+            i++;
+            if (i == 2 || i == 5 || i == 6 || i == 9)
+            {
+                appendCommandLine("");
+                appendLogLine("");
+            }
             appendLogLine(string.Format("{0}: {1}", reg.command, reg.help));
             appendCommandLine("");
         }

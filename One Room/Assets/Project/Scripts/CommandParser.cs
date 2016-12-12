@@ -39,113 +39,119 @@ public class CommandParser : Singleton<CommandParser> {
 
         foreach (string line in lines)
         {
+            
             rowNum++;
             columnNum = 0;
             string[] args = line.Split(new string[] { " " }, StringSplitOptions.RemoveEmptyEntries);
-
+            
             if (args.Length > 0)
             {
-                // Switch on the first word and begin checking subsequent word for valiity
-                switch (args[0])
+                // Ignore comment lines
+                if (args[0] == "//")
+                { }
+                else
                 {
-                    case ("move"):
-                        if (args.Length == 2)
-                        {
-                            int temp;
-                            if (int.TryParse(args[1], out temp))
-                                break;
+                    // Switch on the first word and begin checking subsequent word for valiity
+                    switch (args[0])
+                    {
+                        case ("move"):
+                            if (args.Length == 2)
+                            {
+                                int temp;
+                                if (int.TryParse(args[1], out temp))
+                                    break;
+                                else
+                                {
+                                    results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum;
+                                    results.error_line = rowNum;
+                                    return results;
+                                }
+                            }
                             else
                             {
-                                results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum;
+                                results.error = "Incorrect number of arguments for command 'move' in line " + rowNum + ". Expected 1.";
                                 results.error_line = rowNum;
                                 return results;
                             }
-                        }
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'move' in line " + rowNum + ". Expected 1.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    case ("turn"):
-                        if (args.Length == 2)
-                        {
-                            if (args[1] == "left" || args[1] == "right" || args[1] == "around")
-                                break;
+                        case ("turn"):
+                            if (args.Length == 2)
+                            {
+                                if (args[1] == "left" || args[1] == "right" || args[1] == "around")
+                                    break;
+                                else
+                                {
+                                    results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum + ". Correct args are 'left', 'right', or 'around'";
+                                    results.error_line = rowNum;
+                                    return results;
+                                }
+                            }
                             else
                             {
-                                results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum + ". Correct args are 'left', 'right', or 'around'";
+                                results.error = "Incorrect number of arguments for command 'turn' in line " + rowNum + ". Expected 1.";
                                 results.error_line = rowNum;
                                 return results;
                             }
-                        }
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'turn' in line " + rowNum + ". Expected 1.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    case ("grab"):
-                        if (args.Length == 1)
-                            break;
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'grab' in line " + rowNum + ". Expected 0.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    case ("drop"):
-                        if (args.Length == 1)
-                            break;
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    case ("open"):
-                        if (args.Length == 2)
-                        {
-                            int temp;
-                            if (args[1].Length == 4 && int.TryParse(args[1], out temp))
+                        case ("grab"):
+                            if (args.Length == 1)
                                 break;
                             else
                             {
-                                results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum + ". must be a 4 digit integer.";
+                                results.error = "Incorrect number of arguments for command 'grab' in line " + rowNum + ". Expected 0.";
                                 results.error_line = rowNum;
                                 return results;
                             }
-                        }
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'use' in line " + rowNum + ". Expected 1.";
+                        case ("drop"):
+                            if (args.Length == 1)
+                                break;
+                            else
+                            {
+                                results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
+                                results.error_line = rowNum;
+                                return results;
+                            }
+                        case ("open"):
+                            if (args.Length == 2)
+                            {
+                                int temp;
+                                if (args[1].Length == 4 && int.TryParse(args[1], out temp))
+                                    break;
+                                else
+                                {
+                                    results.error = "Unable to parse argument [" + args[1] + "] in line " + rowNum + ". must be a 4 digit integer.";
+                                    results.error_line = rowNum;
+                                    return results;
+                                }
+                            }
+                            else
+                            {
+                                results.error = "Incorrect number of arguments for command 'use' in line " + rowNum + ". Expected 1.";
+                                results.error_line = rowNum;
+                                return results;
+                            }
+                        case ("return"):
+                            if (args.Length == 1)
+                                break;
+                            else
+                            {
+                                results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
+                                results.error_line = rowNum;
+                                return results;
+                            }
+                        case ("scan"):
+                            if (args.Length == 1)
+                                break;
+                            else
+                            {
+                                results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
+                                results.error_line = rowNum;
+                                return results;
+                            }
+                        default:
+                            results.error = "Unable to recognize command '" + args[0] + "' in line " + rowNum;
                             results.error_line = rowNum;
                             return results;
-                        }
-                    case ("return"):
-                        if (args.Length == 1)
-                            break;
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    case ("scan"):
-                        if (args.Length == 1)
-                            break;
-                        else
-                        {
-                            results.error = "Incorrect number of arguments for command 'drop' in line " + rowNum + ". Expected 0.";
-                            results.error_line = rowNum;
-                            return results;
-                        }
-                    default:
-                        results.error = "Unable to recognize command '" + args[0] + "' in line " + rowNum;
-                        results.error_line = rowNum;
-                        return results;
+                    }
                 }
-
                 results.commands.Add(args);
             }
         }
