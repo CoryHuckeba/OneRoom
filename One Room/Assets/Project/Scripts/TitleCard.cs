@@ -6,7 +6,11 @@ public class TitleCard : MonoBehaviour {
 
     public void FadedOut()
     {
-        PlayerController.Instance.AllowMove(true);
         this.gameObject.SetActive(false);
+    }
+
+    public void PlayerMove()
+    {
+        PlayerController.Instance.AllowMove(true);
     }
 }

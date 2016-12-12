@@ -60,8 +60,8 @@ public class ConsoleController {
     Dictionary<string, CommandRegistration> commands = new Dictionary<string, CommandRegistration>();
 
     // Line formatting
-    const int COMMAND_WIDTH = 17;
-    const int TEXT_WIDTH = 51;
+    const int COMMAND_WIDTH = 13;
+    const int TEXT_WIDTH = 68;
     const int PATH_WIDTH = 15;
 
     // Help Formatting
@@ -102,7 +102,7 @@ public class ConsoleController {
         // Shoprten the command to fit within the 17 character limit
         if (line.Length > COMMAND_WIDTH)
         {
-            line = line.Substring(0, 14) + "...";
+            line = line.Substring(0, COMMAND_WIDTH - 3) + "...";
         }
 
         if (commandScrollback.Count >= scrollbackSize)
@@ -122,7 +122,8 @@ public class ConsoleController {
     {
         // If the log line is longer than the text area in console, move the command line up as well
         int logLines = (int)(line.Length / TEXT_WIDTH);
-
+        Debug.Log(line);
+        Debug.Log(logLines);
         if (logLines > 1)
         {
             for (int i = 0; i < logLines - 1; i++)
