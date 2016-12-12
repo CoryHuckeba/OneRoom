@@ -72,7 +72,7 @@ public class CommandEditor : MonoBehaviour {
                 ParseResults p = CommandParser.Instance.ParseFile(file.text);
                 activeFile.SetValid(p.success);
                 activeFile.content = file.text;
-
+                
                 Close();
             }
         }
@@ -110,6 +110,7 @@ public class CommandEditor : MonoBehaviour {
         file.DeactivateInputField();
         view.SetActive(false);
 
+        control = false;
         consoleView.EditorClose();
     }
 

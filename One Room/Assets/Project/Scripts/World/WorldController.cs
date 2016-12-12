@@ -28,6 +28,7 @@ public class Door : WorldLocation
             if (keyCode == this.keyCode || this.keyCode == 0)
             {
                 this.isOpen = true;
+                this.keyCardColor = "none";
                 return "Entry Authorized, opening door.";
             }
             else
@@ -70,6 +71,7 @@ public class Wall : WorldLocation
     {
         this.isPassable = false;
         this.isPushable = false;
+        this.description = "wall";
     }
 }
 
@@ -121,26 +123,29 @@ public class WorldController : MonoBehaviour
 
     public int[,] Room1Map = new int[,] {
         {1, 1, 2, 1, 1},
-        {1, 5, 0, 4, 1},
-        {1, 4, 0, 0, 1},
         {1, 0, 0, 0, 1},
-        {1, 1, 2, 1, 1}
+        {1, 0, 0, 0, 1},
+        {1, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1}
     };
 
     public int[,] Room2Map = new int[,] {
-        {1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 1},
-        {1, 0, 0, 0, 2},
-        {1, 0, 0, 0, 1},
-        {1, 1, 2, 1, 1}
+        {1, 1, 1, 2, 1, 1},
+        {1, 0, 0, 0, 0, 1},
+        {1, 3, 0, 0, 0, 2},
+        {1, 3, 3, 0, 0, 1},
+        {1, 3, 3, 3, 0, 1},
+        {1, 3, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 1},
+        {1, 2, 1, 1, 1, 1}
     };
 
     public int[,] Room3Map = new int[,] {
-        {1, 1, 2, 1, 1},
-        {1, 0, 0, 0, 1},
-        {2, 0, 0, 0, 1},
-        {1, 0, 0, 0, 1},
-        {1, 1, 2, 1, 1}
+        {1, 1, 1, 2, 1, 1, 1},
+        {1, 0, 0, 4, 0, 0, 1},
+        {1, 0, 0, 3, 0, 0, 2},
+        {1, 0, 0, 4, 0, 0, 1},
+        {1, 2, 1, 1, 1, 1, 1}
     };
 
     public int[,] Room4Map = new int[,] {
@@ -152,19 +157,26 @@ public class WorldController : MonoBehaviour
     };
 
     public int[,] Room5Map = new int[,] {
-        {1, 1, 2, 1, 1},
-        {1, 0, 0, 0, 1},
-        {1, 0, 0, 0, 2},
-        {1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1}
+        {1, 1, 1, 2, 1, 1, 1},
+        {1, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 2},
+        {1, 0, 0, 0, 0, 0, 1},
+        {1, 5, 5, 5, 5, 5, 1},
+        {1, 0, 0, 0, 4, 0, 1},
+        {1, 0, 0, 0, 0, 0, 1},
+        {1, 0, 0, 0, 0, 0, 1},
+        {1, 1, 1, 1, 1, 1, 1}
     };
 
     public int[,] Room6Map = new int[,] {
-        {1, 1, 1, 1, 1},
-        {1, 0, 0, 0, 1},
-        {2, 0, 0, 0, 1},
-        {1, 0, 0, 0, 1},
-        {1, 1, 1, 1, 1}
+        {1, 1, 1, 1},
+        {1, 0, 0, 1},
+        {2, 0, 0, 1},
+        {1, 1, 1, 1}
+    };
+
+    public int[,] Room7Map = new int[,] {
+        {0}
     };
 
     public WorldLocation[,] Room1;
@@ -173,6 +185,7 @@ public class WorldController : MonoBehaviour
     public WorldLocation[,] Room4;
     public WorldLocation[,] Room5;
     public WorldLocation[,] Room6;
+    public WorldLocation[,] Room7;
 
     public WorldLocation[,] buildRoomArray(int[,] RoomMap)
     {
@@ -283,84 +296,133 @@ public class WorldController : MonoBehaviour
         Room4 = buildRoomArray(Room4Map);
         Room5 = buildRoomArray(Room5Map);
         Room6 = buildRoomArray(Room6Map);
+        Room7 = buildRoomArray(Room7Map);
 
+        // --- Room 1 ------------------------------
         if (Room1[0, 2] is Door)
         {
             Door door = Room1[0, 2] as Door;
             door.nextRoom = Room2;
-            door.nextRoomRow = 3;
-            door.nextRoomCol = 2;
-            //door.isOpen = true;
+            door.nextRoomRow = 6;
+            door.nextRoomCol = 1;
+            door.keyCardColor = "blue";
             Room1[0, 2] = door;
         }
 
-        if (Room2[4, 2] is Door)
+        Room1[2, 3].itemAtLocation = new KeyCard("blue", "Blue Keycard", "A Blue Keycard assigned to Dr. Place.");
+
+        // --- Room 2 ------------------------------
+
+        if (Room2[7, 1] is Door)
         {
-            Door door = Room2[4, 2] as Door;
+            Door door = Room2[7, 1] as Door;
             door.nextRoom = Room1;
-            Room2[4, 2] = door;
+            door.nextRoomRow = 1;
+            door.nextRoomCol = 2;
+            Room2[7, 1] = door;
         }
 
-        if (Room2[2, 4] is Door)
+        if (Room2[0, 3] is Door)
         {
-            Door door = Room2[2, 4] as Door;
+            Door door = Room2[0, 3] as Door;
             door.nextRoom = Room3;
-            Room2[2, 4] = door;
+            door.nextRoomRow = 3;
+            door.nextRoomCol = 1;
+            Room2[0, 3] = door;
         }
 
-        if (Room3[0, 2] is Door)
+        // --- Room 3 ------------------------------
+
+        if (Room3[4, 1] is Door)
         {
-            Door door = Room3[0, 2] as Door;
+            Door door = Room3[4, 1] as Door;
             door.nextRoom = Room2;
-            Room3[0, 2] = door;
+            door.nextRoomRow = 1;
+            door.nextRoomCol = 3;
+            Room3[4, 1] = door;
         }
 
-        if (Room3[2, 0] is Door)
+        if (Room3[0, 3] is Door)
         {
-            Door door = Room3[2, 0] as Door;
+            Door door = Room3[0, 3] as Door;
             door.nextRoom = Room4;
-            Room3[2, 0] = door;
+            door.nextRoomRow = 3;
+            door.nextRoomCol = 2;
+            Room3[0, 3] = door;
         }
 
-        if (Room3[4, 2] is Door)
+        if (Room3[2, 6] is Door)
         {
-            Door door = Room3[4, 2] as Door;
+            Door door = Room3[2, 6] as Door;
             door.nextRoom = Room5;
-            Room3[4, 2] = door;
+            door.nextRoomRow = 6;
+            door.nextRoomCol = 1;
+            door.keyCardColor = "red";
+            Room3[2, 6] = door;
         }
+
+        // --- Room 4 ------------------------------
 
         if (Room4[4, 2] is Door)
         {
             Door door = Room4[4, 2] as Door;
             door.nextRoom = Room3;
+            door.nextRoomRow = 1;
+            door.nextRoomCol = 3;
             Room4[4, 2] = door;
         }
 
-        if (Room5[0, 2] is Door)
+        Room4[1, 1].itemAtLocation = new KeyCard("red", "Red Keycard", "A Red Keycard belonging to Security Officer Reuland.");
+
+        // --- Room 5 ------------------------------
+
+        if (Room5[0, 3] is Door)
         {
-            Door door = Room5[0, 2] as Door;
-            door.nextRoom = Room4;
-            Room5[0, 2] = door;
+            Door door = Room5[0, 3] as Door;
+            door.nextRoom = Room7;
+            door.nextRoomRow = 0;
+            door.nextRoomCol = 0;
+            door.keyCardColor = "gold";
+            Room5[0, 3] = door;
         }
 
-        if (Room5[2, 4] is Door)
+        if (Room5[6, 0] is Door)
         {
-            Door door = Room5[2, 4] as Door;
+            Door door = Room5[6, 0] as Door;
+            door.nextRoom = Room3;
+            door.nextRoomRow = 2;
+            door.nextRoomCol = 5;
+            Room5[6, 0] = door;
+        }
+
+        if (Room5[2, 6] is Door)
+        {
+            Door door = Room5[2, 6] as Door;
             door.nextRoom = Room6;
-            door.keyCode = 1234;
+            door.nextRoomRow = 2;
+            door.nextRoomCol = 1;
             door.keyCardColor = "blue";
-            door.open(1234, "blue");
-            Room5[4, 2] = door;
+            Room5[2, 6] = door;
         }
 
-        if (Room6[0, 2] is Door)
+        // --- Room 6 ------------------------------
+
+        if (Room6[2, 0] is Door)
         {
-            Door door = Room6[0, 2] as Door;
+            Door door = Room6[2, 0] as Door;
             door.nextRoom = Room5;
-            Room6[0, 2] = door;
+            door.nextRoomCol = 5;
+            door.nextRoomRow = 2;
+            Room6[2, 0] = door;
         }
 
-        if(Room2[1, 1] is Floor)
+        Room6[2, 2].itemAtLocation = new KeyCard("gold", "Gold Keycard", "A Gold Keycard belonging to Research Director Tavery.");
+
+        // --- Room 7 ------------------------------
+
+
+        /*
+        if (Room2[1, 1] is Floor)
         {
             Room2[1, 1].itemAtLocation = new Gore();
         }
@@ -368,6 +430,7 @@ public class WorldController : MonoBehaviour
         {
             Room2[3, 3].itemAtLocation = new Gore();
         }
+        */
 
         /*
         Debug.Log("Room1:");
