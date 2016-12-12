@@ -33,10 +33,7 @@ public class PauseMenu : Singleton<PauseMenu> {
 
     void Update()
     {
-        if (showing && Input.GetKeyDown(KeyCode.Escape))
-        {
-            Close();
-        }
+        
     }
 
     public void Close()
@@ -53,7 +50,9 @@ public class PauseMenu : Singleton<PauseMenu> {
 
     public void Open()
     {
-        view.SetActive(true);
+        view.gameObject.SetActive(true);
         showing = true;
+
+        PlayerController.Instance.AllowMove(false);
     }
 }

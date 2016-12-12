@@ -136,7 +136,7 @@ public class DroneBrain : MonoBehaviour
                             currentCol = moveLocationDoor.nextRoomCol;
 
                             // END THE FUCKING GAME
-                            if (currentRoom.Length == 11)
+                            if (currentRoom.GetLength(0) == 11)
                                 SceneManager.LoadScene(1);
 
                             logList.Add("Moved forward 1 meter.");

@@ -49,7 +49,6 @@ public class PlayerController : Singleton<PlayerController> {
 
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                AllowMove(false);
                 PauseMenu.Instance.Open();
             }
 
